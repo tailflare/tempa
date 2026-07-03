@@ -1,5 +1,9 @@
 # Tempa
 
+![Crates.io Version](https://img.shields.io/crates/v/tempa)
+![docs.rs](https://img.shields.io/docsrs/tempa)
+![GitHub License](https://img.shields.io/github/license/tailflare/tempa)
+
 A no_std library for working with time in animation and real-time systems.
 
 It provides a small set of temporal primitives: time, duration, time ranges, frame rates, and frame-based stepping. Designed around deterministic conversion between continuous time and discrete frame indices.
