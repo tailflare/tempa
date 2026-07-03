@@ -26,13 +26,13 @@ The API is still evolving and may change significantly.
 
 ## Usage
 ### std
-```
-tempa = 0.1.1
+```toml
+tempa = "0.1.1"
 ```
 
 ### no_std
-```
-tempa = { version = 0.1.1, default-features = false }
+```toml
+tempa = { version = "0.1.1", default-features = false }
 ```
 
 ### Example
