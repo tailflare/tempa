@@ -1,8 +1,7 @@
 # Tempa
 
-![Crates.io Version](https://img.shields.io/crates/v/tempa)
-![docs.rs](https://img.shields.io/docsrs/tempa)
-![GitHub License](https://img.shields.io/github/license/tailflare/tempa)
+[![Crates.io Version](https://img.shields.io/crates/v/tempa)](https://crates.io/crates/tempa)
+[![docs.rs](https://img.shields.io/docsrs/tempa)](https://docs.rs/tempa)
 
 A no_std library for working with time in animation and real-time systems.
 
@@ -27,12 +26,12 @@ The API is still evolving and may change significantly.
 
 ## Usage
 ### std
-```toml
+```
 tempa = 0.1.0
 ```
 
 ### no_std
-```toml
+```
 tempa = { version = 0.1.0, default-features = false }
 ```
 
