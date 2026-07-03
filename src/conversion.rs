@@ -6,8 +6,8 @@ pub fn time_from_frame<T: FloatScalar>(frame: FrameIndex, rate: FrameRate<T>) ->
     Time::from_seconds(T::raw(frame.get()) / rate.fps())
 }
 
-/// Converts a [Time] to the corresponding [FrameIndex]
-/// using the given [FrameRate] and rounding down.
+/// Converts a [Time] to the corresponding [FrameIndex] using the given [FrameRate],
+/// rounding down to the frame that contains that time.
 #[inline]
 pub fn frame_from_time<T: FloatScalar>(time: Time<T>, rate: FrameRate<T>) -> FrameIndex {
     // floor: sample the frame currently containing this time
