@@ -27,12 +27,12 @@ The API is still evolving and may change significantly.
 ## Usage
 ### std
 ```
-tempa = 0.1.0
+tempa = 0.1.1
 ```
 
 ### no_std
 ```
-tempa = { version = 0.1.0, default-features = false }
+tempa = { version = 0.1.1, default-features = false }
 ```
 
 ### Example
