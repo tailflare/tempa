@@ -1,13 +1,13 @@
 use crate::{FloatScalar, FrameIndex, FrameRate, Time};
 
-/// Converts a `FrameIndex` to a `Time` at the given frame rate.
+/// Converts a [FrameIndex] to [Time] using the given [FrameRate].
 #[inline]
 pub fn time_from_frame<T: FloatScalar>(frame: FrameIndex, rate: FrameRate<T>) -> Time<T> {
     Time::from_seconds(T::raw(frame.get()) / rate.fps())
 }
 
-/// Converts a `Time` to the corresponding `FrameIndex`
-/// at the given frame rate (rounding down).
+/// Converts a [Time] to the corresponding [FrameIndex]
+/// using the given [FrameRate] and rounding down.
 #[inline]
 pub fn frame_from_time<T: FloatScalar>(time: Time<T>, rate: FrameRate<T>) -> FrameIndex {
     // floor: sample the frame currently containing this time

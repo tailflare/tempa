@@ -5,56 +5,52 @@ use crate::{
     macros::{impl_approx_forwarding, impl_min_max_forwarding, impl_zero_forwarding},
 };
 
-/// Represents a continuous span of time in seconds, describing the length between two time points.
+/// Represents a span of time in seconds.
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
 #[repr(transparent)]
 pub struct Duration<T: FloatScalar>(T);
 
-/// Trait for entities that have a duration, allowing for retrieval of the duration value.
+/// Trait for values that expose a [Duration].
 pub trait HasDuration<T: FloatScalar> {
-    /// Returns the duration of this entity.
+    /// Returns this value's [Duration].
     fn duration(&self) -> Duration<T>;
 }
 
 impl<T: FloatScalar> Duration<T> {
-    /// Creates a new `Duration` instance from the given number of seconds without
-    /// performing any checks.
+    /// Creates a [Duration] from seconds without validation.
     ///
     /// This function allows invalid values (NaN or infinite) to be used,
     /// which may lead to undefined behavior in subsequent calculations.
     ///
-    /// Prefer `from_seconds` for safe construction, as it ensures that the provided value is valid.
+    /// Prefer [Self::from_seconds] for validated construction.
     #[inline]
     pub const fn from_seconds_unchecked(seconds: T) -> Self {
         Self(seconds)
     }
 
-    /// Creates a new `Duration` instance from the given number of seconds.
+    /// Creates a [Duration] from seconds.
     ///
     /// # Panics
-    /// This function will panic if the provided `seconds` value is NaN or infinite.
+    /// Panics if seconds is NaN or infinite.
     #[inline]
     pub fn from_seconds(seconds: T) -> Self {
         assert!(seconds.is_finite(), "Duration cannot be created from NaN or infinite values");
         Self(seconds)
     }
 
-    /// Returns the reciprocal of this duration as a frame rate, which is the number of frames per
-    /// second.
+    /// Returns the reciprocal duration as a [FrameRate].
     #[inline]
     pub fn frame_rate(&self) -> FrameRate<T> {
         FrameRate::from_duration(*self)
     }
 
-    /// Returns the raw value of this `Duration` instance in seconds.
+    /// Returns this duration in seconds.
     #[inline]
     pub fn seconds(&self) -> T {
         self.0
     }
 
-    /// Returns the ratio of this `Duration` instance to another `Duration` instance.
-    ///
-    /// This is equivalent to dividing the two durations, yielding a dimensionless scalar value.
+    /// Returns the dimensionless ratio of this duration to another.
     #[inline]
     pub fn ratio(&self, other: Duration<T>) -> T {
         *self / other

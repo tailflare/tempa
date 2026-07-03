@@ -5,29 +5,27 @@ use crate::{
     macros::{impl_approx_forwarding, impl_min_max_forwarding},
 };
 
-/// Represents a temporal frequency in frames per second (FPS), defining how many discrete frames
-/// occur within one second of time.
+/// Represents a temporal frequency in frames per second.
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
 #[repr(transparent)]
 pub struct FrameRate<T: FloatScalar>(T);
 
 impl<T: FloatScalar> FrameRate<T> {
-    /// Creates a new `FrameRate` instance from the given frames per second (FPS) value without
-    /// performing any checks.
+    /// Creates a [FrameRate] from frames per second without validation.
     ///
     /// This function allows invalid values (NaN, infinite, or non-positive) to be used,
     /// which may lead to undefined behavior in subsequent calculations.
     ///
-    /// Prefer `from_fps` for safe construction, as it ensures that the provided value is valid.
+    /// Prefer [Self::from_fps] for validated construction.
     #[inline]
     pub const fn from_fps_unchecked(fps: T) -> Self {
         Self(fps)
     }
 
-    /// Creates a new `FrameRate` instance from the given frames per second (FPS) value.
+    /// Creates a [FrameRate] from frames per second.
     ///
     /// # Panics
-    /// This function will panic if the provided `fps` value is NaN, infinite, or non-positive.
+    /// Panics if fps is NaN, infinite, or non-positive.
     #[inline]
     pub fn from_fps(fps: T) -> Self {
         assert!(fps.is_finite(), "FrameRate must be finite");
@@ -35,23 +33,21 @@ impl<T: FloatScalar> FrameRate<T> {
         Self(fps)
     }
 
-    /// Creates a new `FrameRate` instance from the given seconds per frame (SPF) value without
-    /// performing any checks.
+    /// Creates a [FrameRate] from seconds per frame without validation.
     ///
     /// This function allows invalid values (NaN, infinite, or non-positive) to be used, which may
     /// lead to undefined behavior in subsequent calculations.
     ///
-    /// Prefer `from_seconds_per_frame` for safe construction, as it ensures that the provided
-    /// value is valid.
+    /// Prefer [Self::from_seconds_per_frame] for validated construction.
     #[inline]
     pub fn from_seconds_per_frame_unchecked(spf: T) -> Self {
         Self::from_fps_unchecked(T::one() / spf)
     }
 
-    /// Creates a new `FrameRate` instance from the given seconds per frame (SPF) value.
+    /// Creates a [FrameRate] from seconds per frame.
     ///
     /// # Panics
-    /// This function will panic if the provided `spf` value is NaN, infinite, or non-positive.
+    /// Panics if seconds per frame is NaN, infinite, or non-positive.
     #[inline]
     pub fn from_seconds_per_frame(spf: T) -> Self {
         assert!(spf.is_finite(), "seconds_per_frame must be finite");
@@ -60,50 +56,46 @@ impl<T: FloatScalar> FrameRate<T> {
         Self::from_fps(T::one() / spf)
     }
 
-    /// Creates a new `FrameRate` instance from the given `Duration` value without
-    /// performing any checks.
+    /// Creates a [FrameRate] from [Duration] without validation.
     ///
     /// This function allows invalid values (NaN, infinite, or non-positive) to be used, which may
     /// lead to undefined behavior in subsequent calculations.
     ///
-    /// Prefer `from_duration` for safe construction, as it ensures that the provided value is valid.
+    /// Prefer [Self::from_duration] for validated construction.
     #[inline]
     pub fn from_duration_unchecked(duration: Duration<T>) -> Self {
         Self::from_seconds_per_frame_unchecked(duration.seconds())
     }
 
-    /// Creates a new `FrameRate` instance from the given `Duration` value.
+    /// Creates a [FrameRate] from [Duration].
     ///
     /// # Panics
-    /// This function will panic if the provided `duration` value is non-positive.
+    /// Panics if duration is non-positive.
     #[inline]
     pub fn from_duration(duration: Duration<T>) -> Self {
         assert!(duration > Duration::zero(), "Duration must be positive");
         Self::from_seconds_per_frame(duration.seconds())
     }
 
-    /// Returns the value of this `FrameRate` instance as a `ScalarFloat` value in
-    ///  frames per second (FPS).
+    /// Returns frames per second.
     #[inline]
     pub fn fps(&self) -> T {
         self.0
     }
 
-    /// Returns the duration of a single frame as a `ScalarFloat` value in seconds.
+    /// Returns seconds per frame.
     #[inline]
     pub fn seconds_per_frame(&self) -> T {
         T::one() / self.0
     }
 
-    /// Returns the duration of a single frame as a `Duration` instance.
+    /// Returns the duration of one frame as [Duration].
     #[inline]
     pub fn duration(&self) -> Duration<T> {
         Duration::from_seconds(self.seconds_per_frame())
     }
 
-    /// Returns the ratio of this `FrameRate` instance to another `FrameRate` instance.
-    ///
-    /// This is equivalent to dividing the two frame rates, yielding a dimensionless scalar value.
+    /// Returns the dimensionless ratio of this frame rate to another.
     #[inline]
     pub fn ratio(&self, other: FrameRate<T>) -> T {
         *self / other
@@ -211,19 +203,19 @@ impl<T: FloatScalar> DivAssign<T> for FrameRate<T> {
 macro_rules! impl_common_fps_defaults {
     ($scalar:ty) => {
         impl FrameRate<$scalar> {
-            /// A constant representing a frame rate of 24 frames per second (FPS).
+            /// A frame rate of 24 frames per second.
             pub const FPS_24: Self = Self::from_fps_unchecked(24.0);
 
-            /// A constant representing a frame rate of 30 frames per second (FPS).
+            /// A frame rate of 30 frames per second.
             pub const FPS_30: Self = Self::from_fps_unchecked(30.0);
 
-            /// A constant representing a frame rate of 60 frames per second (FPS).
+            /// A frame rate of 60 frames per second.
             pub const FPS_60: Self = Self::from_fps_unchecked(60.0);
 
-            /// A constant representing a frame rate of 120 frames per second (FPS).
+            /// A frame rate of 120 frames per second.
             pub const FPS_120: Self = Self::from_fps_unchecked(120.0);
 
-            /// A constant representing a frame rate of 240 frames per second (FPS).
+            /// A frame rate of 240 frames per second.
             pub const FPS_240: Self = Self::from_fps_unchecked(240.0);
         }
     };

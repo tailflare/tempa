@@ -1,7 +1,6 @@
 use crate::{Duration, FloatScalar, HasDuration, Time, macros::impl_approx_forwarding};
 
-/// Represents a half-open or inclusive interval between two Time<T> values, defining a bounded
-/// segment of time with a start and end.
+/// Represents a bounded time interval with a start and end [Time].
 #[derive(Copy, Clone, Debug, PartialEq)]
 #[repr(C)]
 pub struct TimeRange<T: FloatScalar> {
@@ -9,12 +8,12 @@ pub struct TimeRange<T: FloatScalar> {
     end: Time<T>,
 }
 
-/// Trait for entities that have a time range, allowing for retrieval of the range and its duration.
+/// Trait for values that expose a [TimeRange].
 pub trait HasTimeRange<T: FloatScalar> {
-    /// Returns the time range covered by this entity, if applicable.
+    /// Returns this value's [TimeRange], if applicable.
     fn time_range(&self) -> Option<TimeRange<T>>;
 
-    /// Returns the duration of this entity based on its time range, if applicable.
+    /// Returns this value's [Duration], if applicable.
     #[inline]
     fn duration(&self) -> Option<Duration<T>> {
         self.time_range().map(|r| r.duration())
@@ -22,22 +21,21 @@ pub trait HasTimeRange<T: FloatScalar> {
 }
 
 impl<T: FloatScalar> TimeRange<T> {
-    /// Creates a new `TimeRange` instance from the given start and end times without
-    /// performing any checks.
+    /// Creates a [TimeRange] from start and end without validation.
     ///
     /// This function allows invalid ranges (where start > end) to be used,
     /// which may lead to undefined behavior in subsequent calculations.
     ///
-    /// Prefer `new` for safe construction, as it ensures that the provided values are valid.
+    /// Prefer [Self::new] for validated construction.
     #[inline]
     pub fn new_unchecked(start: Time<T>, end: Time<T>) -> Self {
         Self { start, end }
     }
 
-    /// Creates a new `TimeRange` instance from the given start and end times.
+    /// Creates a [TimeRange] from start and end.
     ///
     /// # Panics
-    /// This function will panic if the provided `start` time is greater than the `end` time.
+    /// Panics if start is greater than end.
     #[inline]
     pub fn new(start: Time<T>, end: Time<T>) -> Self {
         assert!(start <= end, "TimeRange must satisfy start <= end");
@@ -45,67 +43,67 @@ impl<T: FloatScalar> TimeRange<T> {
         Self { start, end }
     }
 
-    /// Returns the start time of this `TimeRange` instance.
+    /// Returns the start [Time].
     #[inline]
     pub fn start(&self) -> Time<T> {
         self.start
     }
 
-    /// Returns the end time of this `TimeRange` instance.
+    /// Returns the end [Time].
     #[inline]
     pub fn end(&self) -> Time<T> {
         self.end
     }
 
-    /// Calculates the duration of this time range.
+    /// Returns this range's [Duration].
     #[inline]
     pub fn duration(&self) -> Duration<T> {
         self.end - self.start
     }
 
-    /// Returns the length of this time range, which is equivalent to its duration.
+    /// Returns this range's [Duration].
     #[inline]
     pub fn len(&self) -> Duration<T> {
         self.duration()
     }
 
-    /// Returns `true` if this range is empty (start and end times are effectively equal).
+    /// Returns true when start and end are equal.
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.duration().is_zero()
     }
 
-    /// Clamps a given time to be within this range.
+    /// Clamps a [Time] to this range.
     #[inline]
     pub fn clamp_time(&self, t: Time<T>) -> Time<T> {
         t.max(self.start).min(self.end)
     }
 
-    /// Normalizes a given time within this range.
-    /// Returns a clamped floating-point factor in the range `[0.0, 1.0]`.
+    /// Normalizes a [Time] within this range.
+    /// Returns an unclamped factor for non-degenerate ranges.
     #[inline]
     pub fn normalize_time(&self, t: Time<T>) -> T {
         t.normalize_between(self.start, self.end)
     }
 
-    /// Returns the center time of this range.
+    /// Returns the center [Time] of this range.
     #[inline]
     pub fn center(&self) -> Time<T> {
         self.start + (self.end - self.start) * T::raw(0.5)
     }
 
-    /// Shifts this range by a given duration.
+    /// Shifts this range by a [Duration].
     #[inline]
     pub fn shift(self, delta: Duration<T>) -> Self {
         Self { start: self.start + delta, end: self.end + delta }
     }
 
-    /// Scales this range by a given factor, keeping the center point fixed.
+    /// Scales this range by a factor while keeping the center fixed.
     ///
     /// If the factor is negative, it will be clamped to zero, effectively collapsing the range.
     ///
     /// # Panics
-    /// This function will panic if the provided `factor` is NaN or infinite.
+    /// Panics if factor is NaN or infinite.
     #[inline]
     pub fn scale(self, factor: T) -> Self {
         assert!(factor.is_finite(), "Scale factor must be finite");
@@ -117,12 +115,12 @@ impl<T: FloatScalar> TimeRange<T> {
         Self { start: center - half, end: center + half }
     }
 
-    /// Scales this range by a given factor, keeping the start point fixed.
+    /// Scales this range by a factor while keeping the start fixed.
     ///
     /// If the factor is negative, it will be clamped to zero, effectively collapsing the range.
     ///
     /// # Panics
-    /// This function will panic if the provided `factor` is NaN or infinite.
+    /// Panics if factor is NaN or infinite.
     #[inline]
     pub fn scale_from_start(self, factor: T) -> Self {
         assert!(factor.is_finite(), "Scale factor must be finite");
@@ -132,32 +130,32 @@ impl<T: FloatScalar> TimeRange<T> {
         Self { start: self.start, end: self.start + duration }
     }
 
-    /// Expands this range by a given duration on both sides.
+    /// Expands this range by a [Duration] on both sides.
     #[inline]
     pub fn expand(self, amount: Duration<T>) -> Self {
         Self { start: self.start - amount, end: self.end + amount }
     }
 
-    /// Pads the start of this range by a given duration.
+    /// Pads the start of this range by a [Duration].
     #[inline]
     pub fn pad_start(self, amount: Duration<T>) -> Self {
         Self { start: self.start - amount, end: self.end }
     }
 
-    /// Pads the end of this range by a given duration.
+    /// Pads the end of this range by a [Duration].
     #[inline]
     pub fn pad_end(self, amount: Duration<T>) -> Self {
         Self { start: self.start, end: self.end + amount }
     }
 
-    /// Remaps a time value from this range to another range.
+    /// Remaps a [Time] from this range to a target range.
     #[inline]
     pub fn remap_time(&self, t: Time<T>, target: &Self) -> Time<T> {
         let u = self.normalize_time(t);
         target.start + (target.end - target.start) * u
     }
 
-    /// Returns a new `TimeRange` that starts at zero and has the same duration as this range.
+    /// Returns a [TimeRange] that starts at zero and preserves duration.
     #[inline]
     pub fn to_duration_range(&self) -> TimeRange<T> {
         let seconds = (self.end - self.start).seconds();
@@ -165,7 +163,7 @@ impl<T: FloatScalar> TimeRange<T> {
         Self { start: Time::zero(), end: time }
     }
 
-    /// Splits this range at a given time, returning the left and right portions as options.
+    /// Splits this range at a [Time].
     #[inline]
     pub fn split_at(&self, t: Time<T>) -> (Option<Self>, Option<Self>) {
         if t <= self.start {
@@ -179,22 +177,7 @@ impl<T: FloatScalar> TimeRange<T> {
         }
     }
 
-    /// Returns a new `TimeRange` that encompasses both this range and another range.
-    #[inline]
-    pub fn union(&self, other: &Self) -> Self {
-        let mut merged = *self;
-        merged.union_in_place(other);
-        merged
-    }
-
-    /// Expands this range to encompass another range.
-    #[inline]
-    pub fn union_in_place(&mut self, other: &Self) {
-        self.start = self.start.min(other.start);
-        self.end = self.end.max(other.end);
-    }
-
-    /// Returns a new `TimeRange` that includes this range and a time value.
+    /// Returns a new [TimeRange] that also includes a [Time].
     #[inline]
     pub fn include_time(&self, time: Time<T>) -> Self {
         let mut merged = *self;
@@ -202,38 +185,38 @@ impl<T: FloatScalar> TimeRange<T> {
         merged
     }
 
-    /// Expands this range to include a time value.
+    /// Expands this range to include a [Time].
     #[inline]
     pub fn include_time_in_place(&mut self, time: Time<T>) {
         self.start = self.start.min(time);
         self.end = self.end.max(time);
     }
 
-    /// Returns `true` if this range contains the given time.
+    /// Returns true if this range contains a [Time].
     #[inline]
     pub fn contains_time(&self, time: Time<T>) -> bool {
         self.start <= time && time <= self.end
     }
 
-    /// Returns `true` if this range fully contains another range.
+    /// Returns true if this range fully contains another [TimeRange].
     #[inline]
     pub fn contains_range(&self, other: &Self) -> bool {
         self.start <= other.start && other.end <= self.end
     }
 
-    /// Returns `true` if this range is fully contained within another range.
+    /// Returns true if this range is fully contained within another [TimeRange].
     #[inline]
     pub fn is_within(&self, other: &Self) -> bool {
         other.contains_range(self)
     }
 
-    /// Returns `true` if this range overlaps another range.
+    /// Returns true if this range overlaps another [TimeRange].
     #[inline]
     pub fn intersects(&self, other: &Self) -> bool {
         self.start <= other.end && other.start <= self.end
     }
 
-    /// Returns the overlapping portion of this range and another range.
+    /// Returns the overlapping portion of this range and another [TimeRange].
     #[inline]
     pub fn intersection(&self, other: &Self) -> Option<Self> {
         if !self.intersects(other) {
@@ -243,13 +226,28 @@ impl<T: FloatScalar> TimeRange<T> {
         Some(Self { start: self.start.max(other.start), end: self.end.min(other.end) })
     }
 
-    /// Returns a new `TimeRange` that encompasses all ranges in the provided slice.
+    /// Returns a new [TimeRange] that encompasses this range and another.
+    #[inline]
+    pub fn union(&self, other: &Self) -> Self {
+        let mut merged = *self;
+        merged.union_in_place(other);
+        merged
+    }
+
+    /// Expands this range to encompass another [TimeRange].
+    #[inline]
+    pub fn union_in_place(&mut self, other: &Self) {
+        self.start = self.start.min(other.start);
+        self.end = self.end.max(other.end);
+    }
+
+    /// Returns a [TimeRange] that encompasses all ranges in a slice.
     #[inline]
     pub fn union_all(ranges: &[Self]) -> Option<Self> {
         Self::union_iter(ranges.iter().copied())
     }
 
-    /// Returns a new `TimeRange` that encompasses all ranges from an iterator.
+    /// Returns a [TimeRange] that encompasses all ranges from an iterator.
     #[inline]
     pub fn union_iter<I>(ranges: I) -> Option<Self>
     where
@@ -267,13 +265,13 @@ impl<T: FloatScalar> TimeRange<T> {
         Some(merged)
     }
 
-    /// Returns a `TimeRange` that encompasses all times in the provided slice.
+    /// Returns a [TimeRange] that encompasses all times in a slice.
     #[inline]
     pub fn from_times(times: &[Time<T>]) -> Option<Self> {
         Self::from_times_iter(times.iter().copied())
     }
 
-    /// Returns a `TimeRange` that encompasses all times from an iterator.
+    /// Returns a [TimeRange] that encompasses all times from an iterator.
     #[inline]
     pub fn from_times_iter<I>(times: I) -> Option<Self>
     where

@@ -1,34 +1,35 @@
 use crate::{FloatScalar, FrameIndex, FrameRate, Time, conversion};
 
-/// Represents a stepper that can iterate through frames in a timeline.
+/// Steps through timeline frames deterministically.
 pub struct FrameStepper<T: FloatScalar> {
     frame: FrameIndex,
     rate: FrameRate<T>,
 }
 
 impl<T: FloatScalar> FrameStepper<T> {
-    /// Creates a new `FrameStepper` starting at frame 0 and using the specified `rate`.
+    /// Creates a [FrameStepper] at frame 0 with the specified [FrameRate].
     pub fn new(rate: FrameRate<T>) -> Self {
         Self { frame: FrameIndex::ZERO, rate }
     }
 
-    /// Returns the current `FrameIndex` of the stepper.
+    /// Returns the current [FrameIndex].
     pub fn current(&self) -> FrameIndex {
         self.frame
     }
 
-    /// Returns the `FrameRate` associated with the stepper.
+    /// Returns the current [FrameRate].
     pub fn frame_rate(&self) -> FrameRate<T> {
         self.rate
     }
 
-    /// Returns the current `Time` of the stepper.
+    /// Returns the current [Time].
     pub fn current_time(&self) -> Time<T> {
         conversion::time_from_frame(self.frame, self.rate)
     }
 
-    /// Steps the stepper by `n` frames, where `n` can be positive (forward) or negative (backward).
-    /// Saturates at the bounds of `FrameIndex` (0 to u32::MAX) to prevent overflow or underflow.
+    /// Steps by n frames.
+    /// Positive values move forward, negative values move backward, and movement saturates within
+    /// [FrameIndex] bounds.
     pub fn step(&mut self, n: i32) {
         if n >= 0 {
             self.frame = self.frame.saturating_add(n as u32);
@@ -37,37 +38,34 @@ impl<T: FloatScalar> FrameStepper<T> {
         }
     }
 
-    /// Steps the stepper forward by one frame, updating the current `FrameIndex`.
-    /// Saturates at the bounds of `FrameIndex` (0 to u32::MAX) to prevent overflow.
+    /// Steps forward by one frame.
     pub fn step_forward(&mut self) {
         self.frame = self.frame.next();
     }
 
-    /// Steps the stepper backward by one frame, updating the current `FrameIndex`.
-    /// Saturates at the bounds of `FrameIndex` (0 to u32::MAX) to prevent underflow.
+    /// Steps backward by one frame.
     pub fn step_backward(&mut self) {
         self.frame = self.frame.prev();
     }
 
-    /// Seeks the stepper to the specified `FrameIndex`.
+    /// Seeks to the specified [FrameIndex].
     pub fn seek(&mut self, frame: FrameIndex) {
         self.frame = frame;
     }
 
-    /// Seeks the stepper to the specified raw frame value, updating the current `FrameIndex`.
+    /// Seeks to a raw frame value.
     pub fn seek_raw(&mut self, raw: u32) {
         self.frame = FrameIndex::new(raw);
     }
 
-    /// Seeks the stepper to the specified `Time`, updating the current `FrameIndex`.
+    /// Seeks to [Time], converted using the current [FrameRate].
     ///
-    /// Note: The `Time` will be converted to the nearest `FrameIndex` based on the stepper's
-    /// `FrameRate`. You should use `Time` directly where sub-frame precision is required.
+    /// Use [Time] directly when sub-frame precision is required.
     pub fn seek_time(&mut self, time: Time<T>) {
         self.frame = conversion::frame_from_time(time, self.rate);
     }
 
-    /// Sets a new `FrameRate` for the stepper, affecting how time is calculated from frames.
+    /// Sets a new [FrameRate].
     ///
     /// Reinterprets the current frame index under a new frame rate.
     /// Does not modify the current frame position.

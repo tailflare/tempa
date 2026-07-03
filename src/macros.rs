@@ -1,10 +1,12 @@
 macro_rules! impl_zero_forwarding {
     ($scalar:ty, $inner:tt) => {
+        /// Returns a value representing zero.
         #[inline]
         pub fn zero() -> Self {
             Self(<$scalar>::zero())
         }
 
+        /// Returns true if the value is equal to zero.
         #[inline]
         pub fn is_zero(&self) -> bool {
             self.$inner.is_zero()
@@ -14,11 +16,13 @@ macro_rules! impl_zero_forwarding {
 
 macro_rules! impl_min_max_forwarding {
     ($scalar:ty, $inner:tt) => {
+        /// Returns the smaller of self and other.
         #[inline]
         pub fn min(self, other: Self) -> Self {
             Self(self.$inner.min(other.$inner))
         }
 
+        /// Returns the larger of self and other.
         #[inline]
         pub fn max(self, other: Self) -> Self {
             Self(self.$inner.max(other.$inner))
@@ -29,16 +33,19 @@ macro_rules! impl_min_max_forwarding {
 macro_rules! impl_inner_op_family_forwarding {
     ($op:ident, $rhs:ty, $inner:tt) => {
         pastey::paste! {
+            #[doc = concat!("Returns the saturating result of ", stringify!($op), ".")]
             #[inline]
             pub const fn [<saturating_ $op>](self, rhs: $rhs) -> Self {
                 Self(self.$inner.[<saturating_ $op>](rhs))
             }
 
+            #[doc = concat!("Returns the wrapping result of ", stringify!($op), ".")]
             #[inline]
             pub const fn [<wrapping_ $op>](self, rhs: $rhs) -> Self {
                 Self(self.$inner.[<wrapping_ $op>](rhs))
             }
 
+            #[doc = concat!("Returns the checked result of ", stringify!($op), ".")]
             #[inline]
             pub const fn [<checked_ $op>](self, rhs: $rhs) -> Option<Self> {
                 if let Some(value) = self.$inner.[<checked_ $op>](rhs) { Some(Self(value)) } else { None }

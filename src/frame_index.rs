@@ -2,43 +2,42 @@ use core::ops::{Add, AddAssign, Sub, SubAssign};
 
 use crate::{FloatScalar, FrameRate, Time, conversion, macros::impl_inner_op_family_forwarding};
 
-/// Represents a discrete, non-negative frame position in a timeline, typically used as an integer
-/// index into a frame-based sequence.
+/// Represents a discrete, non-negative frame position in a timeline.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct FrameIndex(u32);
 
 impl FrameIndex {
-    /// A constant representing the zero frame index.
+    /// The zero frame index.
     pub const ZERO: Self = Self(0);
 
-    /// Creates a new `FrameIndex` instance from the given raw value.
+    /// Creates a [FrameIndex] from a raw value.
     #[inline]
     pub const fn new(value: u32) -> Self {
         Self(value)
     }
 
-    /// Returns the raw value of this `FrameIndex` instance.
+    /// Returns the raw frame value.
     #[inline]
     pub const fn get(&self) -> u32 {
         self.0
     }
 
-    /// Creates a new `FrameIndex` instance from the given `Time` at the specified frame rate.
+    /// Creates a [FrameIndex] from [Time] at the specified [FrameRate].
     #[inline]
     pub fn from_time<T: FloatScalar>(time: Time<T>, rate: FrameRate<T>) -> Self {
         conversion::frame_from_time(time, rate)
     }
 
-    /// Converts this `FrameIndex` to a `Time` at the specified frame rate.
+    /// Converts this [FrameIndex] to [Time] at the specified [FrameRate].
     #[inline]
     pub fn to_time<T: FloatScalar>(self, rate: FrameRate<T>) -> Time<T> {
         conversion::time_from_frame(self, rate)
     }
 
-    /// Returns the offset in frames from this `FrameIndex` to another `FrameIndex`.
-    /// The result is positive if `self` is ahead of `other`, negative if behind, and zero if they
-    /// are the same.
+    /// Returns the signed frame offset from this index to another index.
+    /// The result is positive when self is ahead of other, negative when behind, and zero when
+    /// equal.
     #[inline]
     pub fn offset_from(self, other: FrameIndex) -> i32 {
         let a = self.0 as i64;
@@ -46,13 +45,13 @@ impl FrameIndex {
         (a - b) as i32
     }
 
-    /// Returns the next `FrameIndex` in sequence, saturating at the maximum value of `u32::MAX`.
+    /// Returns the next [FrameIndex], saturating at [u32::MAX].
     #[inline]
     pub const fn next(self) -> Self {
         Self(self.0.saturating_add(1))
     }
 
-    /// Returns the previous `FrameIndex` in sequence, saturating at zero.
+    /// Returns the previous [FrameIndex], saturating at zero.
     #[inline]
     pub const fn prev(self) -> Self {
         Self(self.0.saturating_sub(1))

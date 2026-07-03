@@ -5,58 +5,55 @@ use crate::{
     macros::{impl_approx_forwarding, impl_min_max_forwarding, impl_zero_forwarding},
 };
 
-/// Represents a continuous point in time measured in seconds, used as the primary unit for
-/// temporal calculations.
+/// Represents a continuous time value measured in seconds.
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
 #[repr(transparent)]
 pub struct Time<T: FloatScalar>(T);
 
 impl<T: FloatScalar> Time<T> {
-    /// Creates a new `Time` instance from the given number of seconds without
-    /// performing any checks.
+    /// Creates [Time] from seconds without validation.
     ///
     /// This function allows invalid values (NaN or infinite) to be used,
     /// which may lead to undefined behavior in subsequent calculations.
     ///
-    /// Prefer `from_seconds` for safe construction, as it ensures that the provided value is valid.
+    /// Prefer [Self::from_seconds] for validated construction.
     #[inline]
     pub const fn from_seconds_unchecked(seconds: T) -> Self {
         Self(seconds)
     }
 
-    /// Creates a new `Time` instance from the given number of seconds.
+    /// Creates [Time] from seconds.
     ///
     /// # Panics
-    /// This function will panic if the provided `seconds` value is NaN or infinite.
+    /// Panics if seconds is NaN or infinite.
     #[inline]
     pub fn from_seconds(seconds: T) -> Self {
         assert!(seconds.is_finite(), "Time cannot be created from NaN or infinite values");
         Self(seconds)
     }
 
-    /// Returns the raw value of this `Time` instance in seconds.
+    /// Returns this time value in seconds.
     #[inline]
     pub fn seconds(&self) -> T {
         self.0
     }
 
-    /// Converts this timestamp to a `FrameIndex` at the given frame rate.
+    /// Converts this time value to [FrameIndex] using the given [FrameRate].
     #[inline]
     pub fn to_frame(self, rate: FrameRate<T>) -> FrameIndex {
         conversion::frame_from_time(self, rate)
     }
 
-    /// Creates a new `Time` instance from the given `FrameIndex` at the specified frame rate.
+    /// Creates [Time] from [FrameIndex] at the specified [FrameRate].
     #[inline]
     pub fn from_frame(frame: FrameIndex, rate: FrameRate<T>) -> Self {
         conversion::time_from_frame(frame, rate)
     }
 
-    /// Normalizes this timestamp between a `start` and `end` time boundary.
-    /// Returns a clamped floating-point factor in the range `[0.0, 1.0]`.
+    /// Normalizes this time value between start and end.
+    /// Returns an unclamped factor for non-degenerate ranges.
     ///
-    /// When the range is degenerate (start == end), the function returns `0.0` to avoid division
-    /// by zero.
+    /// Returns 0.0 when the range is degenerate (start == end).
     #[inline]
     pub fn normalize_between(&self, start: Self, end: Self) -> T {
         let total = end - start;

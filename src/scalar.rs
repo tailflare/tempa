@@ -1,15 +1,15 @@
 use num_traits::{Float, NumCast, ToPrimitive};
 
-/// Time compatible floating point scalar type.
+/// Floating-point scalar type used by Tempa time APIs.
 ///
-/// This trait intentionally restricts `Float` to a known subset of types
+/// This trait intentionally restricts [Float] to a known subset of types
 /// used by Tempa (f32, f64) to preserve consistent numerical behavior
 /// across time, duration, and animation systems.
 pub trait FloatScalar: Float {
     /// Converts a primitive numeric value into this scalar type.
     ///
     /// # Panics
-    /// This function will panic if the provided value cannot be represented as this scalar type.
+    /// Panics if the value cannot be represented as this scalar type.
     #[inline]
     fn raw<V>(value: V) -> Self
     where

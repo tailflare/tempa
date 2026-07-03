@@ -1,6 +1,10 @@
-//! Tempa is a no_std temporal system for animation and simulation, providing time, duration, time ranges, frame rates, and deterministic frame-index stepping.
+//! Tempa is a no_std temporal system for animation and simulation.
+//! It provides [Time], [Duration], [TimeRange], [FrameRate], deterministic [FrameIndex]
+//! stepping, and [FrameStepper] for frame-by-frame traversal.
+//! It also includes traits for shared temporal behavior and conversion helpers.
 
 #![no_std]
+#![deny(rustdoc::broken_intra_doc_links)]
 
 mod duration;
 mod frame_index;
