@@ -1,7 +1,11 @@
 # Tempa
 
+[![Tag](https://img.shields.io/github/v/tag/tailflare/tempa)](https://github.com/tailflare/tempa/tags)
 [![Crates.io Version](https://img.shields.io/crates/v/tempa)](https://crates.io/crates/tempa)
 [![docs.rs](https://img.shields.io/docsrs/tempa)](https://docs.rs/tempa)
+[![Main CI Build Status](https://img.shields.io/github/actions/workflow/status/tailflare/tempa/ci.yml?label=main%20build)](https://github.com/tailflare/tempa/actions/workflows/ci.yml)
+[![License](https://img.shields.io/crates/l/tempa)](#license)
+
 
 A no_std library for working with time in animation and real-time systems.
 
