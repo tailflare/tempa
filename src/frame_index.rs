@@ -1,9 +1,16 @@
 use core::ops::{Add, AddAssign, Sub, SubAssign};
 
-use crate::{FloatScalar, FrameRate, Time, conversion, macros::impl_inner_op_family_forwarding};
+#[cfg(feature = "zerocopy")]
+use zerocopy::*;
+
+use crate::{
+    FloatScalar, FrameRate, Time, conversion,
+    macros::{impl_bytemuck_transparent, impl_inner_op_family_forwarding},
+};
 
 /// Represents a discrete, non-negative frame position in a timeline.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[cfg_attr(feature = "zerocopy", derive(FromBytes, Immutable, IntoBytes, KnownLayout))]
 #[repr(transparent)]
 pub struct FrameIndex(u32);
 
@@ -113,6 +120,9 @@ impl SubAssign<u32> for FrameIndex {
     }
 }
 
+// Bytemuck impl
+impl_bytemuck_transparent!(FrameIndex, u32);
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -175,5 +185,48 @@ mod tests {
 
         assert_eq!(time, Time::from_seconds(1.5));
         assert_eq!(frame2, frame);
+    }
+
+    #[cfg(feature = "bytemuck")]
+    #[test]
+    fn bytemuck_traits_are_implemented() {
+        fn assert_impl<
+            T: bytemuck::Pod + bytemuck::Zeroable + bytemuck::TransparentWrapper<u32>,
+        >() {
+        }
+
+        assert_impl::<FrameIndex>();
+    }
+
+    #[cfg(feature = "bytemuck")]
+    #[test]
+    fn bytemuck_roundtrip_works() {
+        let value = FrameIndex::new(1234);
+        let bytes = bytemuck::bytes_of(&value);
+        let decoded = *bytemuck::from_bytes::<FrameIndex>(bytes);
+
+        assert_eq!(decoded, value);
+    }
+
+    #[cfg(feature = "zerocopy")]
+    #[test]
+    fn zerocopy_traits_are_implemented() {
+        fn assert_impl<
+            T: zerocopy::FromBytes + zerocopy::IntoBytes + zerocopy::KnownLayout + zerocopy::Immutable,
+        >() {
+        }
+
+        assert_impl::<FrameIndex>();
+    }
+
+    #[cfg(feature = "zerocopy")]
+    #[test]
+    fn zerocopy_roundtrip_works() {
+        let value = FrameIndex::new(5678);
+        let bytes = <FrameIndex as zerocopy::IntoBytes>::as_bytes(&value);
+        let decoded = <FrameIndex as zerocopy::FromBytes>::ref_from_bytes(bytes)
+            .expect("FrameIndex bytes should decode");
+
+        assert_eq!(*decoded, value);
     }
 }

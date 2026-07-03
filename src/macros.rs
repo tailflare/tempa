@@ -107,7 +107,50 @@ macro_rules! impl_approx_forwarding {
     };
 }
 
+macro_rules! impl_bytemuck_pod {
+    ($wrapper:ident<$scalar:ident>) => {
+        #[cfg(feature = "bytemuck")]
+        unsafe impl<$scalar> ::bytemuck::Zeroable for $wrapper<$scalar> where
+            $scalar: crate::FloatScalar + ::bytemuck::Zeroable
+        {
+        }
+
+        #[cfg(feature = "bytemuck")]
+        unsafe impl<$scalar> ::bytemuck::Pod for $wrapper<$scalar> where
+            $scalar: crate::FloatScalar + ::bytemuck::Pod
+        {
+        }
+    };
+    ($wrapper:ident) => {
+        #[cfg(feature = "bytemuck")]
+        unsafe impl ::bytemuck::Zeroable for $wrapper {}
+
+        #[cfg(feature = "bytemuck")]
+        unsafe impl ::bytemuck::Pod for $wrapper {}
+    };
+}
+
+macro_rules! impl_bytemuck_transparent {
+    ($wrapper:ident<$scalar:ident>, $inner:ty) => {
+        $crate::macros::impl_bytemuck_pod!($wrapper<$scalar>);
+
+        #[cfg(feature = "bytemuck")]
+        unsafe impl<$scalar> ::bytemuck::TransparentWrapper<$inner> for $wrapper<$scalar> where
+            $scalar: crate::FloatScalar
+        {
+        }
+    };
+    ($wrapper:ident, $inner:ty) => {
+        $crate::macros::impl_bytemuck_pod!($wrapper);
+
+        #[cfg(feature = "bytemuck")]
+        unsafe impl ::bytemuck::TransparentWrapper<$inner> for $wrapper {}
+    };
+}
+
 pub(crate) use impl_approx_forwarding;
+pub(crate) use impl_bytemuck_pod;
+pub(crate) use impl_bytemuck_transparent;
 pub(crate) use impl_inner_op_family_forwarding;
 pub(crate) use impl_min_max_forwarding;
 pub(crate) use impl_zero_forwarding;

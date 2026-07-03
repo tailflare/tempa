@@ -1,12 +1,19 @@
 use core::ops::{Add, AddAssign, Div, Mul, MulAssign, Sub, SubAssign};
 
+#[cfg(feature = "zerocopy")]
+use zerocopy::*;
+
 use crate::{
     FloatScalar, FrameRate,
-    macros::{impl_approx_forwarding, impl_min_max_forwarding, impl_zero_forwarding},
+    macros::{
+        impl_approx_forwarding, impl_bytemuck_transparent, impl_min_max_forwarding,
+        impl_zero_forwarding,
+    },
 };
 
 /// Represents a span of time in seconds.
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "zerocopy", derive(FromBytes, Immutable, IntoBytes, KnownLayout))]
 #[repr(transparent)]
 pub struct Duration<T: FloatScalar>(T);
 
@@ -233,6 +240,9 @@ impl<T: FloatScalar> HasDuration<T> for Duration<T> {
     }
 }
 
+// Bytemuck  impl
+impl_bytemuck_transparent!(Duration<T>, T);
+
 #[cfg(test)]
 mod tests {
     use approx::assert_abs_diff_eq;
@@ -322,5 +332,48 @@ mod tests {
     fn has_duration_returns_self() {
         let d = Duration::from_seconds(4.0_f64);
         assert_eq!(HasDuration::duration(&d), d);
+    }
+
+    #[cfg(feature = "bytemuck")]
+    #[test]
+    fn bytemuck_traits_are_implemented() {
+        fn assert_impl<
+            T: bytemuck::Pod + bytemuck::Zeroable + bytemuck::TransparentWrapper<f32>,
+        >() {
+        }
+
+        assert_impl::<Duration<f32>>();
+    }
+
+    #[cfg(feature = "bytemuck")]
+    #[test]
+    fn bytemuck_roundtrip_works() {
+        let value = Duration::from_seconds(1.25_f32);
+        let bytes = bytemuck::bytes_of(&value);
+        let decoded = *bytemuck::from_bytes::<Duration<f32>>(bytes);
+
+        assert_eq!(decoded, value);
+    }
+
+    #[cfg(feature = "zerocopy")]
+    #[test]
+    fn zerocopy_traits_are_implemented() {
+        fn assert_impl<
+            T: zerocopy::FromBytes + zerocopy::IntoBytes + zerocopy::KnownLayout + zerocopy::Immutable,
+        >() {
+        }
+
+        assert_impl::<Duration<f32>>();
+    }
+
+    #[cfg(feature = "zerocopy")]
+    #[test]
+    fn zerocopy_roundtrip_works() {
+        let value = Duration::from_seconds(2.5_f32);
+        let bytes = <Duration<f32> as zerocopy::IntoBytes>::as_bytes(&value);
+        let decoded = <Duration<f32> as zerocopy::FromBytes>::ref_from_bytes(bytes)
+            .expect("Duration bytes should decode");
+
+        assert_eq!(*decoded, value);
     }
 }

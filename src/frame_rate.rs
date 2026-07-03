@@ -1,12 +1,16 @@
 use core::ops::{Div, DivAssign, Mul, MulAssign};
 
+#[cfg(feature = "zerocopy")]
+use zerocopy::*;
+
 use crate::{
     Duration, FloatScalar, HasDuration,
-    macros::{impl_approx_forwarding, impl_min_max_forwarding},
+    macros::{impl_approx_forwarding, impl_bytemuck_transparent, impl_min_max_forwarding},
 };
 
 /// Represents a temporal frequency in frames per second.
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "zerocopy", derive(FromBytes, Immutable, IntoBytes, KnownLayout))]
 #[repr(transparent)]
 pub struct FrameRate<T: FloatScalar>(T);
 
@@ -224,6 +228,9 @@ macro_rules! impl_common_fps_defaults {
 impl_common_fps_defaults!(f32);
 impl_common_fps_defaults!(f64);
 
+// Bytemuck impl
+impl_bytemuck_transparent!(FrameRate<T>, T);
+
 #[cfg(test)]
 mod tests {
     use approx::assert_abs_diff_eq;
@@ -313,5 +320,48 @@ mod tests {
         assert_abs_diff_eq!(FrameRate::<f64>::FPS_60.fps(), 60.0, epsilon = 1e-12);
         assert_abs_diff_eq!(FrameRate::<f64>::FPS_120.fps(), 120.0, epsilon = 1e-12);
         assert_abs_diff_eq!(FrameRate::<f64>::FPS_240.fps(), 240.0, epsilon = 1e-12);
+    }
+
+    #[cfg(feature = "bytemuck")]
+    #[test]
+    fn bytemuck_traits_are_implemented() {
+        fn assert_impl<
+            T: bytemuck::Pod + bytemuck::Zeroable + bytemuck::TransparentWrapper<f32>,
+        >() {
+        }
+
+        assert_impl::<FrameRate<f32>>();
+    }
+
+    #[cfg(feature = "bytemuck")]
+    #[test]
+    fn bytemuck_roundtrip_works() {
+        let value = FrameRate::from_fps(48.0_f32);
+        let bytes = bytemuck::bytes_of(&value);
+        let decoded = *bytemuck::from_bytes::<FrameRate<f32>>(bytes);
+
+        assert_eq!(decoded, value);
+    }
+
+    #[cfg(feature = "zerocopy")]
+    #[test]
+    fn zerocopy_traits_are_implemented() {
+        fn assert_impl<
+            T: zerocopy::FromBytes + zerocopy::IntoBytes + zerocopy::KnownLayout + zerocopy::Immutable,
+        >() {
+        }
+
+        assert_impl::<FrameRate<f32>>();
+    }
+
+    #[cfg(feature = "zerocopy")]
+    #[test]
+    fn zerocopy_roundtrip_works() {
+        let value = FrameRate::from_fps(120.0_f32);
+        let bytes = <FrameRate<f32> as zerocopy::IntoBytes>::as_bytes(&value);
+        let decoded = <FrameRate<f32> as zerocopy::FromBytes>::ref_from_bytes(bytes)
+            .expect("FrameRate bytes should decode");
+
+        assert_eq!(*decoded, value);
     }
 }

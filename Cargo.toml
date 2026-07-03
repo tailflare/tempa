@@ -11,12 +11,24 @@ include = ["src/**", "README.md", "LICENSE*"]
 [features]
 default = ["std"]
 
-std = ["num-traits/std", "approx/std"]
+std = ["num-traits/std", "approx/std", "zerocopy?/std"]
 
+bytemuck = ["dep:bytemuck"]
+zerocopy = ["dep:zerocopy"]
+
+_all_optional = ["bytemuck", "zerocopy"]
 
 [dependencies]
 num-traits = { version = "0.2.19", default-features = false, features = [
     "libm",
 ] }
+
 approx = { version = "0.5.1", default-features = false }
+
 pastey = "0.2.3"
+
+bytemuck = { version = "1.25.0", optional = true, default-features = false }
+
+zerocopy = { version = "0.8.52", optional = true, default-features = false, features = [
+    "derive",
+] }

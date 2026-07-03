@@ -1,7 +1,14 @@
-use crate::{Duration, FloatScalar, HasDuration, Time, macros::impl_approx_forwarding};
+#[cfg(feature = "zerocopy")]
+use zerocopy::*;
+
+use crate::{
+    Duration, FloatScalar, HasDuration, Time,
+    macros::{impl_approx_forwarding, impl_bytemuck_pod},
+};
 
 /// Represents a bounded time interval with a start and end [Time].
 #[derive(Copy, Clone, Debug, PartialEq)]
+#[cfg_attr(feature = "zerocopy", derive(FromBytes, Immutable, IntoBytes, KnownLayout))]
 #[repr(C)]
 pub struct TimeRange<T: FloatScalar> {
     start: Time<T>,
@@ -338,6 +345,9 @@ impl<T: FloatScalar> From<core::ops::Range<Time<T>>> for TimeRange<T> {
 // Equality forwarding
 impl_approx_forwarding!(TimeRange<T>, start, end);
 
+// Bytemuck impl
+impl_bytemuck_pod!(TimeRange<T>);
+
 #[cfg(test)]
 mod tests {
     use approx::{AbsDiffEq, RelativeEq, UlpsEq, assert_abs_diff_eq};
@@ -519,5 +529,46 @@ mod tests {
         assert!(!a.relative_eq(&far, 0.01, 0.01));
 
         assert!(a.ulps_eq(&a, f64::default_epsilon(), f64::default_max_ulps()));
+    }
+
+    #[cfg(feature = "bytemuck")]
+    #[test]
+    fn bytemuck_traits_are_implemented() {
+        fn assert_impl<T: bytemuck::Pod + bytemuck::Zeroable>() {}
+
+        assert_impl::<TimeRange<f32>>();
+    }
+
+    #[cfg(feature = "bytemuck")]
+    #[test]
+    fn bytemuck_roundtrip_works() {
+        let value = TimeRange::new(Time::from_seconds(1.25_f32), Time::from_seconds(3.5_f32));
+        let bytes = bytemuck::bytes_of(&value);
+        let decoded = *bytemuck::from_bytes::<TimeRange<f32>>(bytes);
+
+        assert_eq!(decoded, value);
+    }
+
+    #[cfg(feature = "zerocopy")]
+    #[test]
+    fn zerocopy_traits_are_implemented() {
+        fn assert_impl<T: zerocopy::FromBytes + zerocopy::KnownLayout + zerocopy::Immutable>() {}
+
+        assert_impl::<TimeRange<f32>>();
+    }
+
+    #[cfg(feature = "zerocopy")]
+    #[test]
+    fn zerocopy_roundtrip_works() {
+        let raw = [1.25_f32.to_bits(), 3.5_f32.to_bits()];
+        let bytes = unsafe {
+            core::slice::from_raw_parts(raw.as_ptr() as *const u8, core::mem::size_of_val(&raw))
+        };
+
+        let decoded = <TimeRange<f32> as zerocopy::FromBytes>::ref_from_bytes(bytes)
+            .expect("TimeRange bytes should decode");
+        let expected = TimeRange::new(Time::from_seconds(1.25_f32), Time::from_seconds(3.5_f32));
+
+        assert_eq!(*decoded, expected);
     }
 }

@@ -6,25 +6,27 @@ default:
     just --list
 
 # Core Pipeline
+build target="std" *cargo_args:
+    @just _run build {{ target }} {{ cargo_args }}
 
-[arg("release", long, value="--release")]
-build target="std" release="":
-    @just _run build {{ target }} {{ release }}
+check target="std" *cargo_args:
+    @just _run check {{ target }} {{ cargo_args }}
 
-check target="std":
-    @just _run check {{ target }} ""
+test target="std" *cargo_args:
+    @just _run test {{ target }} {{ cargo_args }}
 
-[arg("release", long, value="--release")]
-test target="std" release="":
-    @just _run test {{ target }} {{ release }}
+sanitize:
+    @just tidy
+    @just sanity
 
 sanity:
-    @just tidy
     @just validate
     @just build std
+    @just build std --features _all_optional
     @just build no-std
-    @just test std
-    @just test no-std
+    @just build no-std --features _all_optional
+    @just test std -- --quiet
+    @just test no-std -- --quiet
 
 # Release
 release version:
@@ -45,10 +47,10 @@ fmt-check:
     cargo +nightly fmt --all -- --check
 
 clippy:
-    cargo +stable clippy --all-targets --all-features --fix --allow-dirty
+    cargo +stable clippy --all-features --fix --allow-dirty
 
 lint:
-    cargo +stable clippy --all-targets --all-features -- -D warnings
+    cargo +stable clippy --all-features -- -D warnings
 
 validate:
     @just fmt-check
@@ -59,15 +61,14 @@ tidy:
     @just clippy
 
 # Private helpers
+[private]
+_run command target *cargo_args:
+    @just _run-{{ target }} {{ command }} {{ cargo_args }}
 
 [private]
-_run command target release="":
-    @just _execute-{{ target }} "{{ command }}" {{ release }}
+_run-std command *cargo_args:
+    cargo +stable {{ command }} {{ cargo_args }}
 
 [private]
-_execute-std command release="":
-    cargo +stable {{ command }} --all-targets {{ release }}
-
-[private]
-_execute-no-std command release="":
-    {{ if command == "test" { "cargo +stable test --all-targets --no-default-features " + release } else { "cargo +stable " + command + " --no-default-features --target thumbv7m-none-eabi " + release } }}
+_run-no-std command *cargo_args:
+    {{ if command == "test" { "cargo +stable test --no-default-features" } else { "cargo +stable " + command + " --no-default-features --target thumbv7m-none-eabi" } }} {{ cargo_args }}
