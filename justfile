@@ -37,7 +37,7 @@ release version:
     git commit -am "chore: release {{ version }}"
     git tag -a "v{{ version }}" -m "Release {{ version }}"
     git push origin main --tags
-    cargo +stable publish
+    @echo "Release {{ version }} complete. CI will now publish the crate to crates.io."
 
 # Housekeeping
 fmt:
@@ -59,6 +59,9 @@ validate:
 tidy:
     @just fmt
     @just clippy
+
+ci_sanity:
+    @just sanity
 
 # Private helpers
 [private]
