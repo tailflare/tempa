@@ -31,7 +31,7 @@ release version:
     cargo +stable set-version {{ version }}
     @just sanity
     @echo "Performing dry run..."
-    cargo +stable publish --dry-run
+    cargo +stable publish --dry-run --allow-dirty
     git commit -am "chore: release {{ version }}"
     git tag -a "v{{ version }}" -m "Release {{ version }}"
     git push origin main --tags
