@@ -6,6 +6,7 @@ edition = "2024"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/tailflare/tempa"
 description = "A no_std temporal system for animation and simulation, providing time, duration, time ranges, frame rates, and deterministic frame-index stepping."
+include = ["src/**", "README.md", "LICENSE*"]
 
 [features]
 default = ["std"]
