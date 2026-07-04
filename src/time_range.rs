@@ -1,8 +1,9 @@
+use rinia::FloatScalar;
 #[cfg(feature = "zerocopy")]
 use zerocopy::*;
 
 use crate::{
-    Duration, FloatScalar, HasDuration, Time,
+    Duration, HasDuration, Time,
     macros::{impl_approx_forwarding, impl_bytemuck_pod},
 };
 
@@ -96,7 +97,7 @@ impl<T: FloatScalar> TimeRange<T> {
     /// Returns the center [Time] of this range.
     #[inline]
     pub fn center(&self) -> Time<T> {
-        self.start + (self.end - self.start) * T::raw(0.5)
+        self.start + (self.end - self.start) * T::from_scalar(0.5)
     }
 
     /// Shifts this range by a [Duration].
@@ -115,9 +116,9 @@ impl<T: FloatScalar> TimeRange<T> {
     pub fn scale(self, factor: T) -> Self {
         assert!(factor.is_finite(), "Scale factor must be finite");
 
-        let factor = factor.max(T::zero());
+        let factor = factor.max(T::ZERO);
         let center = self.center();
-        let half = (self.end - self.start) * (factor * T::raw(0.5));
+        let half = (self.end - self.start) * (factor * T::from_scalar(0.5));
 
         Self { start: center - half, end: center + half }
     }
@@ -132,7 +133,7 @@ impl<T: FloatScalar> TimeRange<T> {
     pub fn scale_from_start(self, factor: T) -> Self {
         assert!(factor.is_finite(), "Scale factor must be finite");
 
-        let factor = factor.max(T::zero());
+        let factor = factor.max(T::ZERO);
         let duration = self.duration() * factor;
         Self { start: self.start, end: self.start + duration }
     }

@@ -3,7 +3,7 @@ macro_rules! impl_zero_forwarding {
         /// Returns a value representing zero.
         #[inline]
         pub fn zero() -> Self {
-            Self(<$scalar>::zero())
+            Self(<$scalar>::ZERO)
         }
 
         /// Returns true if the value is equal to zero.
@@ -56,7 +56,7 @@ macro_rules! impl_inner_op_family_forwarding {
 
 macro_rules! impl_approx_forwarding {
     ($wrapper:ident<$scalar:ident>, $($inner:tt),+ $(,)?) => {
-        impl<$scalar: crate::FloatScalar + approx::AbsDiffEq<Epsilon = $scalar>> approx::AbsDiffEq
+        impl<$scalar: ::rinia::FloatScalar + approx::AbsDiffEq<Epsilon = $scalar>> approx::AbsDiffEq
             for $wrapper<$scalar>
         {
             type Epsilon = $scalar;
@@ -72,7 +72,7 @@ macro_rules! impl_approx_forwarding {
             }
         }
 
-        impl<$scalar: crate::FloatScalar + approx::RelativeEq<Epsilon = $scalar>> approx::RelativeEq
+        impl<$scalar: ::rinia::FloatScalar + approx::RelativeEq<Epsilon = $scalar>> approx::RelativeEq
             for $wrapper<$scalar>
         {
             #[inline]
@@ -91,7 +91,7 @@ macro_rules! impl_approx_forwarding {
             }
         }
 
-        impl<$scalar: crate::FloatScalar + approx::UlpsEq<Epsilon = $scalar>> approx::UlpsEq
+        impl<$scalar: ::rinia::FloatScalar + approx::UlpsEq<Epsilon = $scalar>> approx::UlpsEq
             for $wrapper<$scalar>
         {
             #[inline]
@@ -111,13 +111,13 @@ macro_rules! impl_bytemuck_pod {
     ($wrapper:ident<$scalar:ident>) => {
         #[cfg(feature = "bytemuck")]
         unsafe impl<$scalar> ::bytemuck::Zeroable for $wrapper<$scalar> where
-            $scalar: crate::FloatScalar + ::bytemuck::Zeroable
+            $scalar: ::rinia::FloatScalar + ::bytemuck::Zeroable
         {
         }
 
         #[cfg(feature = "bytemuck")]
         unsafe impl<$scalar> ::bytemuck::Pod for $wrapper<$scalar> where
-            $scalar: crate::FloatScalar + ::bytemuck::Pod
+            $scalar: ::rinia::FloatScalar + ::bytemuck::Pod
         {
         }
     };
@@ -136,7 +136,7 @@ macro_rules! impl_bytemuck_transparent {
 
         #[cfg(feature = "bytemuck")]
         unsafe impl<$scalar> ::bytemuck::TransparentWrapper<$inner> for $wrapper<$scalar> where
-            $scalar: crate::FloatScalar
+            $scalar: ::rinia::FloatScalar
         {
         }
     };

@@ -11,7 +11,6 @@ mod frame_index;
 mod frame_rate;
 mod frame_stepper;
 pub(crate) mod macros;
-mod scalar;
 mod time;
 mod time_range;
 
@@ -25,7 +24,6 @@ pub use self::{
     frame_index::FrameIndex,
     frame_rate::FrameRate,
     frame_stepper::FrameStepper,
-    scalar::FloatScalar,
     time::Time,
     time_range::{HasTimeRange, TimeRange},
 };

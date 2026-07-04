@@ -1,10 +1,11 @@
 use core::ops::{Div, DivAssign, Mul, MulAssign};
 
+use rinia::FloatScalar;
 #[cfg(feature = "zerocopy")]
 use zerocopy::*;
 
 use crate::{
-    Duration, FloatScalar, HasDuration,
+    Duration, HasDuration,
     macros::{impl_approx_forwarding, impl_bytemuck_transparent, impl_min_max_forwarding},
 };
 
@@ -33,7 +34,7 @@ impl<T: FloatScalar> FrameRate<T> {
     #[inline]
     pub fn from_fps(fps: T) -> Self {
         assert!(fps.is_finite(), "FrameRate must be finite");
-        assert!(fps > T::zero(), "FrameRate must be positive");
+        assert!(fps > T::ZERO, "FrameRate must be positive");
         Self(fps)
     }
 
@@ -45,7 +46,7 @@ impl<T: FloatScalar> FrameRate<T> {
     /// Prefer [Self::from_seconds_per_frame] for validated construction.
     #[inline]
     pub fn from_seconds_per_frame_unchecked(spf: T) -> Self {
-        Self::from_fps_unchecked(T::one() / spf)
+        Self::from_fps_unchecked(T::ONE / spf)
     }
 
     /// Creates a [FrameRate] from seconds per frame.
@@ -55,9 +56,9 @@ impl<T: FloatScalar> FrameRate<T> {
     #[inline]
     pub fn from_seconds_per_frame(spf: T) -> Self {
         assert!(spf.is_finite(), "seconds_per_frame must be finite");
-        assert!(spf > T::zero(), "seconds_per_frame must be positive");
+        assert!(spf > T::ZERO, "seconds_per_frame must be positive");
 
-        Self::from_fps(T::one() / spf)
+        Self::from_fps(T::ONE / spf)
     }
 
     /// Creates a [FrameRate] from [Duration] without validation.
@@ -90,7 +91,7 @@ impl<T: FloatScalar> FrameRate<T> {
     /// Returns seconds per frame.
     #[inline]
     pub fn seconds_per_frame(&self) -> T {
-        T::one() / self.0
+        T::ONE / self.0
     }
 
     /// Returns the duration of one frame as [Duration].

@@ -1,4 +1,6 @@
-use crate::{FloatScalar, FrameIndex, FrameRate, Time, conversion};
+use rinia::FloatScalar;
+
+use crate::{FrameIndex, FrameRate, Time, conversion};
 
 /// Steps through timeline frames deterministically.
 pub struct FrameStepper<T: FloatScalar> {

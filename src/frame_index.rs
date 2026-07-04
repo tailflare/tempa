@@ -1,10 +1,11 @@
 use core::ops::{Add, AddAssign, Sub, SubAssign};
 
+use rinia::FloatScalar;
 #[cfg(feature = "zerocopy")]
 use zerocopy::*;
 
 use crate::{
-    FloatScalar, FrameRate, Time, conversion,
+    FrameRate, Time, conversion,
     macros::{impl_bytemuck_transparent, impl_inner_op_family_forwarding},
 };
 

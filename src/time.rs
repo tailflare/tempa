@@ -1,10 +1,11 @@
 use core::ops::{Add, AddAssign, Sub, SubAssign};
 
+use rinia::FloatScalar;
 #[cfg(feature = "zerocopy")]
 use zerocopy::*;
 
 use crate::{
-    Duration, FloatScalar, FrameIndex, FrameRate, conversion,
+    Duration, FrameIndex, FrameRate, conversion,
     macros::{
         impl_approx_forwarding, impl_bytemuck_transparent, impl_min_max_forwarding,
         impl_zero_forwarding,
@@ -64,7 +65,7 @@ impl<T: FloatScalar> Time<T> {
     #[inline]
     pub fn normalize_between(&self, start: Self, end: Self) -> T {
         let total = end - start;
-        if total.seconds() > T::zero() { (*self - start) / total } else { T::zero() }
+        if total.seconds() > T::ONE { (*self - start) / total } else { T::ZERO }
     }
 
     // Min/Max forwarding impls.

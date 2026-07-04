@@ -1,9 +1,11 @@
-use crate::{FloatScalar, FrameIndex, FrameRate, Time};
+use rinia::FloatScalar;
+
+use crate::{FrameIndex, FrameRate, Time};
 
 /// Converts a [FrameIndex] to [Time] using the given [FrameRate].
 #[inline]
 pub fn time_from_frame<T: FloatScalar>(frame: FrameIndex, rate: FrameRate<T>) -> Time<T> {
-    Time::from_seconds(T::raw(frame.get()) / rate.fps())
+    Time::from_seconds(T::from_scalar(frame.get()) / rate.fps())
 }
 
 /// Converts a [Time] to the corresponding [FrameIndex] using the given [FrameRate],
@@ -15,11 +17,11 @@ pub fn frame_from_time<T: FloatScalar>(time: Time<T>, rate: FrameRate<T>) -> Fra
 
     // clamp negative time to frame 0 (animation convention)
     // should be impossible but we defensively clamp incase unchecked functions were used.
-    let clamped = raw.max(T::zero());
+    let clamped = raw.max(T::ZERO);
 
     // saturate to u32::MAX to avoid overflow when converting to FrameIndex
-    let max_u32 = T::raw(u32::MAX);
-    let frame_val = if clamped >= max_u32 { u32::MAX } else { clamped.to_u32().unwrap_or(0) };
+    let max_u32 = T::from_scalar(u32::MAX);
+    let frame_val = if clamped >= max_u32 { u32::MAX } else { clamped.as_scalar() };
 
     FrameIndex::new(frame_val)
 }
