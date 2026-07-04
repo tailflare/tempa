@@ -19,13 +19,13 @@ macro_rules! impl_min_max_forwarding {
         /// Returns the smaller of self and other.
         #[inline]
         pub fn min(self, other: Self) -> Self {
-            Self(self.$inner.min(other.$inner))
+            Self(self.$inner.min_val(other.$inner))
         }
 
         /// Returns the larger of self and other.
         #[inline]
         pub fn max(self, other: Self) -> Self {
-            Self(self.$inner.max(other.$inner))
+            Self(self.$inner.max_val(other.$inner))
         }
     };
 }

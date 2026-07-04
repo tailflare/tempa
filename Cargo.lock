@@ -73,9 +73,9 @@ dependencies = [
 
 [[package]]
 name = "rinia"
-version = "0.0.5"
+version = "0.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "771359bf699215500bc2c6a989fce7750d3e08d14537454f68640dbd787896c1"
+checksum = "f12c8896c858a21bc353b43a15cac1148f3734e2b132c0f69e995511fe89c5de"
 dependencies = [
  "approx",
  "core_maths",

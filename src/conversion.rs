@@ -17,7 +17,7 @@ pub fn frame_from_time<T: FloatScalar>(time: Time<T>, rate: FrameRate<T>) -> Fra
 
     // clamp negative time to frame 0 (animation convention)
     // should be impossible but we defensively clamp incase unchecked functions were used.
-    let clamped = raw.max(T::ZERO);
+    let clamped = raw.max_val(T::ZERO);
 
     // saturate to u32::MAX to avoid overflow when converting to FrameIndex
     let max_u32 = T::from_scalar(u32::MAX);

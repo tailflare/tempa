@@ -116,7 +116,7 @@ impl<T: FloatScalar> TimeRange<T> {
     pub fn scale(self, factor: T) -> Self {
         assert!(factor.is_finite(), "Scale factor must be finite");
 
-        let factor = factor.max(T::ZERO);
+        let factor = factor.max_val(T::ZERO);
         let center = self.center();
         let half = (self.end - self.start) * (factor * T::from_scalar(0.5));
 
@@ -133,7 +133,7 @@ impl<T: FloatScalar> TimeRange<T> {
     pub fn scale_from_start(self, factor: T) -> Self {
         assert!(factor.is_finite(), "Scale factor must be finite");
 
-        let factor = factor.max(T::ZERO);
+        let factor = factor.max_val(T::ZERO);
         let duration = self.duration() * factor;
         Self { start: self.start, end: self.start + duration }
     }
