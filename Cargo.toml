@@ -19,7 +19,7 @@ zerocopy = ["dep:zerocopy"]
 _all_optional = ["bytemuck", "zerocopy"]
 
 [dependencies]
-rinia = { version = "0.0.6", default-features = false }
+rinia = { version = "0.0.7", default-features = false }
 
 approx = { version = "0.5.1", default-features = false }
 

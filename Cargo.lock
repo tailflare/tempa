@@ -24,15 +24,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c8efb64bd706a16a1bdde310ae86b351e4d21550d98d056f22f8a7f7a2183fec"
 
 [[package]]
-name = "core_maths"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "77745e017f5edba1a9c1d854f6f3a52dac8a12dd5af5d2f54aecf61e43d80d30"
-dependencies = [
- "libm",
-]
-
-[[package]]
 name = "libm"
 version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -73,12 +64,12 @@ dependencies = [
 
 [[package]]
 name = "rinia"
-version = "0.0.6"
+version = "0.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f12c8896c858a21bc353b43a15cac1148f3734e2b132c0f69e995511fe89c5de"
+checksum = "a1779e4c0cdfa0db05f076eedf674341228ff554e938212f26b4ddbbfe6bdb3e"
 dependencies = [
  "approx",
- "core_maths",
+ "libm",
  "pastey",
  "zerocopy",
 ]
