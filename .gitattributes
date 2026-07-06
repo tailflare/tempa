@@ -4,8 +4,3 @@
 # Windows specific
 *.bat eol=crlf
 *.cmd eol=crlf
-
-# MMD Binary Files
-*.vmd binary
-*.pmd binary
-*.pmx binary
