@@ -63,6 +63,9 @@ tidy:
 ci_sanity:
     @just sanity
 
+ci_crate_publish:
+    cargo +stable publish
+
 # Private helpers
 [private]
 _run command target *cargo_args:
