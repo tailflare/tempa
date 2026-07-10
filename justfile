@@ -36,7 +36,8 @@ release version:
     cargo +stable publish --dry-run --allow-dirty
     git commit -am "chore: release {{ version }}"
     git tag -a "v{{ version }}" -m "Release {{ version }}"
-    git push origin main --tags
+    git push origin main
+    git push origin "v{{ version }}"
     @echo "Release {{ version }} complete. CI will now publish the crate to crates.io."
 
 # Housekeeping
