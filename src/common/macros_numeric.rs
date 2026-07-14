@@ -1,12 +1,15 @@
 macro_rules! impl_numeric_zero {
     ($wrapper:ident<$t:ident>) => {
+        // Zero inherent
         impl<$t> $wrapper<$t>
         where
             $t: ::rinia::numeric::Zero,
         {
+            /// Returns the zero.
             pub const ZERO: Self = Self(<$t as ::rinia::numeric::Zero>::ZERO);
         }
 
+        // Zero trait
         impl<$t> ::rinia::numeric::Zero for $wrapper<$t>
         where
             $t: ::rinia::numeric::Zero,
@@ -18,13 +21,16 @@ macro_rules! impl_numeric_zero {
 
 macro_rules! impl_numeric_bounded_min {
     ($wrapper:ident<$t:ident>) => {
+        // BoundedMin inherent
         impl<$t> $wrapper<$t>
         where
             $t: ::rinia::numeric::BoundedMin,
         {
+            /// Returns the minimum value.
             pub const MIN: Self = Self(<$t as ::rinia::numeric::BoundedMin>::MIN);
         }
 
+        // BoundedMin trait
         impl<$t> ::rinia::numeric::BoundedMin for $wrapper<$t>
         where
             $t: ::rinia::numeric::BoundedMin,
@@ -36,13 +42,16 @@ macro_rules! impl_numeric_bounded_min {
 
 macro_rules! impl_numeric_bounded_max {
     ($wrapper:ident<$t:ident>) => {
+        // BoundedMax inherent
         impl<$t> $wrapper<$t>
         where
             $t: ::rinia::numeric::BoundedMax,
         {
+            /// Returns the maximum value.
             pub const MAX: Self = Self(<$t as ::rinia::numeric::BoundedMax>::MAX);
         }
 
+        // BoundedMax trait
         impl<$t> ::rinia::numeric::BoundedMax for $wrapper<$t>
         where
             $t: ::rinia::numeric::BoundedMax,
@@ -54,19 +63,23 @@ macro_rules! impl_numeric_bounded_max {
 
 macro_rules! impl_numeric_min_max {
     ($wrapper:ident<$t:ident>) => {
+        // MinMax inherent
         impl<$t> $wrapper<$t>
         where
             $t: ::rinia::numeric::MinMax,
         {
+            /// Returns the minimum of two values.
             pub fn min(self, other: Self) -> Self {
                 Self(<$t as ::rinia::numeric::MinMax>::minimum(self.0, other.0))
             }
 
+            /// Returns the maximum of two values.
             pub fn max(self, other: Self) -> Self {
                 Self(<$t as ::rinia::numeric::MinMax>::maximum(self.0, other.0))
             }
         }
 
+        // MinMax trait
         impl<$t> ::rinia::numeric::MinMax for $wrapper<$t>
         where
             $t: ::rinia::numeric::MinMax,
@@ -84,15 +97,18 @@ macro_rules! impl_numeric_min_max {
 
 macro_rules! impl_numeric_is_finite {
     ($wrapper:ident<$t:ident>) => {
+        // IsFinite inherent
         impl<$t> $wrapper<$t>
         where
             $t: Copy + ::rinia::numeric::IsFinite,
         {
+            /// Returns true if the value is finite.
             pub fn is_finite(self) -> bool {
                 <$t as ::rinia::numeric::IsFinite>::is_finite(self.0)
             }
         }
 
+        // IsFinite trait
         impl<$t> ::rinia::numeric::IsFinite for $wrapper<$t>
         where
             $t: Copy + ::rinia::numeric::IsFinite,

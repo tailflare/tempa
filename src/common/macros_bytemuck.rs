@@ -2,12 +2,14 @@
 macro_rules! impl_bytemuck_basic {
 	([$($generic:tt)*], $type:ty, item: $item:ty $(,)?) => {
 
+        // Bytemuck Zeroable trait
 		unsafe impl<$($generic)*> ::bytemuck::Zeroable for $type
 		where
 			$item: ::bytemuck::Zeroable,
 		{
 		}
 
+        // Bytemuck Pod trait
 		unsafe impl<$($generic)*> ::bytemuck::Pod for $type
 		where
 			$item: ::bytemuck::Pod,

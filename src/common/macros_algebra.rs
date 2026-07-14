@@ -1,6 +1,7 @@
 macro_rules! impl_approx_forwarding {
 	($wrapper:ident<$scalar:ident>, $($inner:tt),+ $(,)?) => {
-		impl<$scalar> ::rinia::algebra::ApproxEqAbs for $wrapper<$scalar>
+		// ApproxEqAbs trait
+        impl<$scalar> ::rinia::algebra::ApproxEqAbs for $wrapper<$scalar>
 		where
 			$scalar: Copy + ::rinia::algebra::ApproxEqAbs<Tolerance = $scalar>,
 		{
@@ -15,6 +16,7 @@ macro_rules! impl_approx_forwarding {
 			}
 		}
 
+        // ApproxEqRel trait
 		impl<$scalar> ::rinia::algebra::ApproxEqRel for $wrapper<$scalar>
 		where
 			$scalar: Copy + ::rinia::algebra::ApproxEqRel<Tolerance = $scalar>,
