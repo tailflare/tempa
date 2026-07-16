@@ -25,7 +25,9 @@ sanity:
     @just build std --features _all_optional
     @just build no-std
     @just build no-std --features _all_optional
+    @just test std --features _all_optional -- --quiet
     @just test std -- --quiet
+    @just test no-std --features _all_optional -- --quiet
     @just test no-std -- --quiet
 
 # Release
