@@ -23,3 +23,15 @@ pub use self::{
     time::Time,
     time_range::{HasTimeRange, TimeRange},
 };
+
+pub mod prelude {
+    pub use super::{
+        duration::{Duration, HasDuration},
+        error::Error,
+        frame_index::FrameIndex,
+        frame_rate::FrameRate,
+        frame_stepper::FrameStepper,
+        time::Time,
+        time_range::{HasTimeRange, TimeRange},
+    };
+}
