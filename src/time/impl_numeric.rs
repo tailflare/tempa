@@ -6,4 +6,4 @@ common::impl_numeric_bounded_max!(Time<T>);
 common::impl_numeric_min_max!(Time<T>);
 common::impl_numeric_is_finite!(Time<T>);
 
-rinia::impl_numeric_casts_transparent!(Time<T>);
+rinia::impl_numeric_casts_wrapper!(Time<T>);

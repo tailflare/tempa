@@ -5,4 +5,4 @@ common::impl_numeric_bounded_min!(FrameIndex<T>);
 common::impl_numeric_bounded_max!(FrameIndex<T>);
 common::impl_numeric_min_max!(FrameIndex<T>);
 
-rinia::impl_numeric_casts_transparent!(FrameIndex<T>);
+rinia::impl_numeric_casts_wrapper!(FrameIndex<T>);
