@@ -130,7 +130,7 @@ where
 crate::frame_rate::impl_rate_fps!(24, 25, 30, 48, 50, 60, 120, 144, 240);
 
 // Impl approx equality traits for FrameRate<T>
-common::impl_approx_forwarding!(FrameRate<T>, 0);
+rinia::impl_approx_eq_wrapper!([T], impl: FrameRate<T>, item: T);
 
 // Impl bytemuck for FrameRate<T>
 common::impl_bytemuck_basic!(

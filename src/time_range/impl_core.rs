@@ -448,7 +448,7 @@ where
 }
 
 // Impl approx equality traits for TimeRange<T>
-common::impl_approx_forwarding!(TimeRange<T>, start, end);
+rinia::impl_approx_eq_wrapper!([T], impl: TimeRange<T>, item: T, fields: [start, end]);
 
 // Impl bytemuck for TimeRange<T>
 common::impl_bytemuck_basic!(

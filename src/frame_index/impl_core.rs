@@ -121,7 +121,7 @@ impl From<FrameIndex<usize>> for usize {
 }
 
 // Impl approx equality traits for FrameIndex<T>
-common::impl_approx_forwarding!(FrameIndex<T>, 0);
+rinia::impl_approx_eq_wrapper!([T], impl: FrameIndex<T>, item: T);
 
 // Impl bytemuck for FrameIndex<T>
 common::impl_bytemuck_basic!(

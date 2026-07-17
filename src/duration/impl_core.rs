@@ -100,7 +100,7 @@ where
 }
 
 // Impl approx equality traits for Duration<T>
-common::impl_approx_forwarding!(Duration<T>, 0);
+rinia::impl_approx_eq_wrapper!([T], impl: Duration<T>, item: T);
 
 // Impl bytemuck for Duration<T>
 common::impl_bytemuck_basic!(

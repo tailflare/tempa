@@ -111,7 +111,7 @@ impl From<Time<Scalard>> for Scalard {
 }
 
 // Impl approx equality traits for Time<T>
-common::impl_approx_forwarding!(Time<T>, 0);
+rinia::impl_approx_eq_wrapper!([T], impl: Time<T>, item: T);
 
 // Impl bytemuck for Time<T>
 common::impl_bytemuck_basic!(
