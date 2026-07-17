@@ -182,8 +182,7 @@ mod ops {
 
 mod approx {
     use rinia::{
-        assert_approx_eq_abs_tol, assert_approx_eq_rel_tol, assert_approx_ne_abs_tol,
-        assert_approx_ne_rel_tol,
+        assert_approx_eq_abs, assert_approx_eq_rel, assert_approx_ne_abs, assert_approx_ne_rel,
     };
 
     use super::*;
@@ -193,8 +192,8 @@ mod approx {
         let a = Time::new(1.0_f32);
         let b = Time::new(1.0008_f32);
 
-        assert_approx_eq_abs_tol!(a, b, 0.001_f32);
-        assert_approx_ne_abs_tol!(a, b, 0.0001_f32);
+        assert_approx_eq_abs!(a, b, 0.001_f32);
+        assert_approx_ne_abs!(a, b, 0.0001_f32);
     }
 
     #[test]
@@ -202,8 +201,8 @@ mod approx {
         let a = Time::new(100.0_f32);
         let b = Time::new(100.4_f32);
 
-        assert_approx_eq_rel_tol!(a, b, 0.005_f32);
-        assert_approx_ne_rel_tol!(a, b, 0.001_f32);
+        assert_approx_eq_rel!(a, b, 0.005_f32);
+        assert_approx_ne_rel!(a, b, 0.001_f32);
     }
 }
 

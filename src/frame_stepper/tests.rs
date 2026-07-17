@@ -1,6 +1,6 @@
 #![cfg(test)]
 
-use rinia::assert_approx_eq_abs_tol;
+use rinia::assert_approx_eq_abs;
 
 use crate::{FrameIndex, FrameRate, FrameStepper, Time};
 
@@ -82,7 +82,7 @@ mod seeking_and_time {
         assert_eq!(stepper.current(), FrameIndex::new(36_u32));
 
         let t = stepper.current_time();
-        assert_approx_eq_abs_tol!(t.seconds(), 1.5_f32, 1e-6_f32);
+        assert_approx_eq_abs!(t.seconds(), 1.5_f32, 1e-6_f32);
     }
 }
 
@@ -98,6 +98,6 @@ mod frame_rate_updates {
 
         assert_eq!(stepper.current(), FrameIndex::new(48_u32));
         assert_eq!(stepper.frame_rate(), FrameRate::new(60.0_f32));
-        assert_approx_eq_abs_tol!(stepper.current_time().seconds(), 0.8_f32, 1e-6_f32);
+        assert_approx_eq_abs!(stepper.current_time().seconds(), 0.8_f32, 1e-6_f32);
     }
 }

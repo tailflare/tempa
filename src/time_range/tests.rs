@@ -357,8 +357,7 @@ mod traits {
 
 mod approx {
     use rinia::{
-        assert_approx_eq_abs_tol, assert_approx_eq_rel_tol, assert_approx_ne_abs_tol,
-        assert_approx_ne_rel_tol,
+        assert_approx_eq_abs, assert_approx_eq_rel, assert_approx_ne_abs, assert_approx_ne_rel,
     };
 
     use super::*;
@@ -369,8 +368,8 @@ mod approx {
         let close = TimeRange::new(Time::new(1.0005_f32), Time::new(3.0005_f32));
         let far_end = TimeRange::new(Time::new(1.0005_f32), Time::new(3.01_f32));
 
-        assert_approx_eq_abs_tol!(a, close, 0.001_f32);
-        assert_approx_ne_abs_tol!(a, far_end, 0.001_f32);
+        assert_approx_eq_abs!(a, close, 0.001_f32);
+        assert_approx_ne_abs!(a, far_end, 0.001_f32);
     }
 
     #[test]
@@ -379,8 +378,8 @@ mod approx {
         let close = TimeRange::new(Time::new(100.2_f32), Time::new(300.6_f32));
         let far_start = TimeRange::new(Time::new(101.0_f32), Time::new(300.6_f32));
 
-        assert_approx_eq_rel_tol!(a, close, 0.01_f32);
-        assert_approx_ne_rel_tol!(a, far_start, 0.001_f32);
+        assert_approx_eq_rel!(a, close, 0.01_f32);
+        assert_approx_ne_rel!(a, far_start, 0.001_f32);
     }
 }
 
