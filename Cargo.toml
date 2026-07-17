@@ -1,6 +1,6 @@
 [package]
 name = "tempa"
-version = "0.1.11"
+version = "0.1.12"
 publish = true
 edition = "2024"
 license = "MIT OR Apache-2.0"
