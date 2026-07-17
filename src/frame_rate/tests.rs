@@ -77,6 +77,59 @@ mod construction {
     }
 }
 
+mod numeric {
+    use rinia::numeric::{Cast, LossyCast, SaturatingCast, TryCast, TryExactCast};
+
+    use super::*;
+
+    #[test]
+    fn cast_variants_are_forwarded_to_inner_type() {
+        let r_u8 = FrameRate::new(42_u8);
+
+        let cast_u32: FrameRate<u32> = r_u8.cast();
+        assert_eq!(cast_u32, FrameRate::new(42_u32));
+        let cast_u32_trait: FrameRate<u32> = <FrameRate<u8> as Cast<FrameRate<u32>>>::cast(r_u8);
+        assert_eq!(cast_u32_trait, FrameRate::new(42_u32));
+        assert_eq!(FrameRate::<u32>::cast_from(r_u8), FrameRate::new(42_u32));
+
+        let lossy_u8: FrameRate<u8> = r_u8.lossy_cast();
+        assert_eq!(lossy_u8, FrameRate::new(42_u8));
+        let lossy_u8_trait: FrameRate<u8> =
+            <FrameRate<u8> as LossyCast<FrameRate<u8>>>::lossy_cast(r_u8);
+        assert_eq!(lossy_u8_trait, FrameRate::new(42_u8));
+        assert_eq!(FrameRate::<u8>::lossy_cast_from(r_u8), FrameRate::new(42_u8));
+
+        let sat_u8: FrameRate<u8> = r_u8.saturating_cast();
+        assert_eq!(sat_u8, FrameRate::new(42_u8));
+        let sat_u8_trait: FrameRate<u8> =
+            <FrameRate<u8> as SaturatingCast<FrameRate<u8>>>::saturating_cast(r_u8);
+        assert_eq!(sat_u8_trait, FrameRate::new(42_u8));
+        assert_eq!(FrameRate::<u8>::saturating_cast_from(r_u8), FrameRate::new(42_u8));
+
+        let try_u32: FrameRate<u32> = r_u8.try_cast().expect("u8 to u32 should work");
+        assert_eq!(try_u32, FrameRate::new(42_u32));
+        let try_u32_trait: FrameRate<u32> =
+            <FrameRate<u8> as TryCast<FrameRate<u32>>>::try_cast(r_u8)
+                .expect("u8 to u32 should work");
+        assert_eq!(try_u32_trait, FrameRate::new(42_u32));
+        assert_eq!(
+            FrameRate::<u32>::try_cast_from(r_u8).expect("u8 to u32 should work"),
+            FrameRate::new(42_u32)
+        );
+
+        let exact_u32: FrameRate<u32> = r_u8.try_exact_cast().expect("exact cast should work");
+        assert_eq!(exact_u32, FrameRate::new(42_u32));
+        let exact_u32_trait: FrameRate<u32> =
+            <FrameRate<u8> as TryExactCast<FrameRate<u32>>>::try_exact_cast(r_u8)
+                .expect("exact cast should work");
+        assert_eq!(exact_u32_trait, FrameRate::new(42_u32));
+        assert_eq!(
+            FrameRate::<u32>::try_exact_cast_from(r_u8).expect("exact cast should work"),
+            FrameRate::new(42_u32)
+        );
+    }
+}
+
 mod ops {
     use super::*;
 

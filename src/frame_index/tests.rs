@@ -31,7 +31,10 @@ mod construction {
 }
 
 mod numeric {
-    use rinia::numeric::{BoundedMax, BoundedMin, MinMax, Zero};
+    use rinia::numeric::{
+        BoundedMax, BoundedMin, Cast, LossyCast, MinMax, SaturatingCast, TryCast, TryExactCast,
+        Zero,
+    };
 
     use super::*;
 
@@ -59,6 +62,53 @@ mod numeric {
         assert_eq!(a.max(b), b);
         assert_eq!(a.minimum(b), a);
         assert_eq!(a.maximum(b), b);
+    }
+
+    #[test]
+    fn cast_variants_are_forwarded_to_inner_type() {
+        let f_u8 = FrameIndex::new(42_u8);
+
+        let cast_u32: FrameIndex<u32> = f_u8.cast();
+        assert_eq!(cast_u32, FrameIndex::new(42_u32));
+        let cast_u32_trait: FrameIndex<u32> = <FrameIndex<u8> as Cast<FrameIndex<u32>>>::cast(f_u8);
+        assert_eq!(cast_u32_trait, FrameIndex::new(42_u32));
+        assert_eq!(FrameIndex::<u32>::cast_from(f_u8), FrameIndex::new(42_u32));
+
+        let lossy_u8: FrameIndex<u8> = f_u8.lossy_cast();
+        assert_eq!(lossy_u8, FrameIndex::new(42_u8));
+        let lossy_u8_trait: FrameIndex<u8> =
+            <FrameIndex<u8> as LossyCast<FrameIndex<u8>>>::lossy_cast(f_u8);
+        assert_eq!(lossy_u8_trait, FrameIndex::new(42_u8));
+        assert_eq!(FrameIndex::<u8>::lossy_cast_from(f_u8), FrameIndex::new(42_u8));
+
+        let sat_u8: FrameIndex<u8> = f_u8.saturating_cast();
+        assert_eq!(sat_u8, FrameIndex::new(42_u8));
+        let sat_u8_trait: FrameIndex<u8> =
+            <FrameIndex<u8> as SaturatingCast<FrameIndex<u8>>>::saturating_cast(f_u8);
+        assert_eq!(sat_u8_trait, FrameIndex::new(42_u8));
+        assert_eq!(FrameIndex::<u8>::saturating_cast_from(f_u8), FrameIndex::new(42_u8));
+
+        let try_u32: FrameIndex<u32> = f_u8.try_cast().expect("u8 to u32 should work");
+        assert_eq!(try_u32, FrameIndex::new(42_u32));
+        let try_u32_trait: FrameIndex<u32> =
+            <FrameIndex<u8> as TryCast<FrameIndex<u32>>>::try_cast(f_u8)
+                .expect("u8 to u32 should work");
+        assert_eq!(try_u32_trait, FrameIndex::new(42_u32));
+        assert_eq!(
+            FrameIndex::<u32>::try_cast_from(f_u8).expect("u8 to u32 should work"),
+            FrameIndex::new(42_u32)
+        );
+
+        let exact_u32: FrameIndex<u32> = f_u8.try_exact_cast().expect("exact cast should work");
+        assert_eq!(exact_u32, FrameIndex::new(42_u32));
+        let exact_u32_trait: FrameIndex<u32> =
+            <FrameIndex<u8> as TryExactCast<FrameIndex<u32>>>::try_exact_cast(f_u8)
+                .expect("exact cast should work");
+        assert_eq!(exact_u32_trait, FrameIndex::new(42_u32));
+        assert_eq!(
+            FrameIndex::<u32>::try_exact_cast_from(f_u8).expect("exact cast should work"),
+            FrameIndex::new(42_u32)
+        );
     }
 }
 

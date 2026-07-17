@@ -130,6 +130,68 @@ mod accessors_and_ops {
     }
 }
 
+mod casting {
+    use rinia::numeric::{Cast, LossyCast, SaturatingCast, TryCast, TryExactCast};
+
+    use super::*;
+
+    #[test]
+    fn cast_variants_are_forwarded_to_time_fields() {
+        let r_u8 = TimeRange::new(Time::new(10_u8), Time::new(20_u8));
+
+        let cast_u32: TimeRange<u32> = r_u8.cast();
+        assert_eq!(cast_u32, TimeRange::new(Time::new(10_u32), Time::new(20_u32)));
+        let cast_u32_trait: TimeRange<u32> = <TimeRange<u8> as Cast<TimeRange<u32>>>::cast(r_u8);
+        assert_eq!(cast_u32_trait, TimeRange::new(Time::new(10_u32), Time::new(20_u32)));
+        assert_eq!(
+            TimeRange::<u32>::cast_from(r_u8),
+            TimeRange::new(Time::new(10_u32), Time::new(20_u32))
+        );
+
+        let lossy_u8: TimeRange<u8> = r_u8.lossy_cast();
+        assert_eq!(lossy_u8, TimeRange::new(Time::new(10_u8), Time::new(20_u8)));
+        let lossy_u8_trait: TimeRange<u8> =
+            <TimeRange<u8> as LossyCast<TimeRange<u8>>>::lossy_cast(r_u8);
+        assert_eq!(lossy_u8_trait, TimeRange::new(Time::new(10_u8), Time::new(20_u8)));
+        assert_eq!(
+            TimeRange::<u8>::lossy_cast_from(r_u8),
+            TimeRange::new(Time::new(10_u8), Time::new(20_u8))
+        );
+
+        let sat_u8: TimeRange<u8> = r_u8.saturating_cast();
+        assert_eq!(sat_u8, TimeRange::new(Time::new(10_u8), Time::new(20_u8)));
+        let sat_u8_trait: TimeRange<u8> =
+            <TimeRange<u8> as SaturatingCast<TimeRange<u8>>>::saturating_cast(r_u8);
+        assert_eq!(sat_u8_trait, TimeRange::new(Time::new(10_u8), Time::new(20_u8)));
+        assert_eq!(
+            TimeRange::<u8>::saturating_cast_from(r_u8),
+            TimeRange::new(Time::new(10_u8), Time::new(20_u8))
+        );
+
+        let try_u32: TimeRange<u32> = r_u8.try_cast().expect("u8 to u32 should work");
+        assert_eq!(try_u32, TimeRange::new(Time::new(10_u32), Time::new(20_u32)));
+        let try_u32_trait: TimeRange<u32> =
+            <TimeRange<u8> as TryCast<TimeRange<u32>>>::try_cast(r_u8)
+                .expect("u8 to u32 should work");
+        assert_eq!(try_u32_trait, TimeRange::new(Time::new(10_u32), Time::new(20_u32)));
+        assert_eq!(
+            TimeRange::<u32>::try_cast_from(r_u8).expect("u8 to u32 should work"),
+            TimeRange::new(Time::new(10_u32), Time::new(20_u32))
+        );
+
+        let exact_u32: TimeRange<u32> = r_u8.try_exact_cast().expect("exact cast should work");
+        assert_eq!(exact_u32, TimeRange::new(Time::new(10_u32), Time::new(20_u32)));
+        let exact_u32_trait: TimeRange<u32> =
+            <TimeRange<u8> as TryExactCast<TimeRange<u32>>>::try_exact_cast(r_u8)
+                .expect("exact cast should work");
+        assert_eq!(exact_u32_trait, TimeRange::new(Time::new(10_u32), Time::new(20_u32)));
+        assert_eq!(
+            TimeRange::<u32>::try_exact_cast_from(r_u8).expect("exact cast should work"),
+            TimeRange::new(Time::new(10_u32), Time::new(20_u32))
+        );
+    }
+}
+
 mod advanced_ops {
     use super::*;
 

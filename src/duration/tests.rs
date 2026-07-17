@@ -51,6 +51,8 @@ mod construction {
 }
 
 mod numeric {
+    use rinia::numeric::{Cast, LossyCast, SaturatingCast, TryCast, TryExactCast};
+
     use super::*;
 
     #[test]
@@ -80,6 +82,52 @@ mod numeric {
 
         assert!(a.is_finite());
         assert!(!Duration::new(Scalarf::NEG_INFINITY).is_finite());
+    }
+
+    #[test]
+    fn cast_variants_are_forwarded_to_inner_type() {
+        let d_u8 = Duration::new(42_u8);
+
+        let cast_u32: Duration<u32> = d_u8.cast();
+        assert_eq!(cast_u32, Duration::new(42_u32));
+        let cast_u32_trait: Duration<u32> = <Duration<u8> as Cast<Duration<u32>>>::cast(d_u8);
+        assert_eq!(cast_u32_trait, Duration::new(42_u32));
+        assert_eq!(Duration::<u32>::cast_from(d_u8), Duration::new(42_u32));
+
+        let lossy_u8: Duration<u8> = d_u8.lossy_cast();
+        assert_eq!(lossy_u8, Duration::new(42_u8));
+        let lossy_u8_trait: Duration<u8> =
+            <Duration<u8> as LossyCast<Duration<u8>>>::lossy_cast(d_u8);
+        assert_eq!(lossy_u8_trait, Duration::new(42_u8));
+        assert_eq!(Duration::<u8>::lossy_cast_from(d_u8), Duration::new(42_u8));
+
+        let sat_u8: Duration<u8> = d_u8.saturating_cast();
+        assert_eq!(sat_u8, Duration::new(42_u8));
+        let sat_u8_trait: Duration<u8> =
+            <Duration<u8> as SaturatingCast<Duration<u8>>>::saturating_cast(d_u8);
+        assert_eq!(sat_u8_trait, Duration::new(42_u8));
+        assert_eq!(Duration::<u8>::saturating_cast_from(d_u8), Duration::new(42_u8));
+
+        let try_u32: Duration<u32> = d_u8.try_cast().expect("u8 to u32 should work");
+        assert_eq!(try_u32, Duration::new(42_u32));
+        let try_u32_trait: Duration<u32> = <Duration<u8> as TryCast<Duration<u32>>>::try_cast(d_u8)
+            .expect("u8 to u32 should work");
+        assert_eq!(try_u32_trait, Duration::new(42_u32));
+        assert_eq!(
+            Duration::<u32>::try_cast_from(d_u8).expect("u8 to u32 should work"),
+            Duration::new(42_u32)
+        );
+
+        let exact_u32: Duration<u32> = d_u8.try_exact_cast().expect("exact cast should work");
+        assert_eq!(exact_u32, Duration::new(42_u32));
+        let exact_u32_trait: Duration<u32> =
+            <Duration<u8> as TryExactCast<Duration<u32>>>::try_exact_cast(d_u8)
+                .expect("exact cast should work");
+        assert_eq!(exact_u32_trait, Duration::new(42_u32));
+        assert_eq!(
+            Duration::<u32>::try_exact_cast_from(d_u8).expect("exact cast should work"),
+            Duration::new(42_u32)
+        );
     }
 }
 

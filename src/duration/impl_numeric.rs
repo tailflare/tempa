@@ -5,3 +5,5 @@ common::impl_numeric_bounded_min!(Duration<T>);
 common::impl_numeric_bounded_max!(Duration<T>);
 common::impl_numeric_min_max!(Duration<T>);
 common::impl_numeric_is_finite!(Duration<T>);
+
+rinia::impl_numeric_casts_transparent!(Duration<T>);

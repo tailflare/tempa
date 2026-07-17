@@ -60,6 +60,8 @@ mod construction {
 }
 
 mod numeric {
+    use rinia::numeric::{Cast, LossyCast, SaturatingCast, TryCast, TryExactCast};
+
     use super::*;
 
     #[test]
@@ -93,6 +95,50 @@ mod numeric {
     #[test]
     fn zero_trait_matches_inherent_zero() {
         assert_eq!(<Time<Scalarf> as Zero>::ZERO, Time::<Scalarf>::ZERO);
+    }
+
+    #[test]
+    fn cast_variants_are_forwarded_to_inner_type() {
+        let t_u8 = Time::new(42_u8);
+
+        let cast_u32: Time<u32> = t_u8.cast();
+        assert_eq!(cast_u32, Time::new(42_u32));
+        let cast_u32_trait: Time<u32> = <Time<u8> as Cast<Time<u32>>>::cast(t_u8);
+        assert_eq!(cast_u32_trait, Time::new(42_u32));
+        assert_eq!(Time::<u32>::cast_from(t_u8), Time::new(42_u32));
+
+        let lossy_u8: Time<u8> = t_u8.lossy_cast();
+        assert_eq!(lossy_u8, Time::new(42_u8));
+        let lossy_u8_trait: Time<u8> = <Time<u8> as LossyCast<Time<u8>>>::lossy_cast(t_u8);
+        assert_eq!(lossy_u8_trait, Time::new(42_u8));
+        assert_eq!(Time::<u8>::lossy_cast_from(t_u8), Time::new(42_u8));
+
+        let sat_u8: Time<u8> = t_u8.saturating_cast();
+        assert_eq!(sat_u8, Time::new(42_u8));
+        let sat_u8_trait: Time<u8> = <Time<u8> as SaturatingCast<Time<u8>>>::saturating_cast(t_u8);
+        assert_eq!(sat_u8_trait, Time::new(42_u8));
+        assert_eq!(Time::<u8>::saturating_cast_from(t_u8), Time::new(42_u8));
+
+        let try_u32: Time<u32> = t_u8.try_cast().expect("u8 to u32 should work");
+        assert_eq!(try_u32, Time::new(42_u32));
+        let try_u32_trait: Time<u32> =
+            <Time<u8> as TryCast<Time<u32>>>::try_cast(t_u8).expect("u8 to u32 should work");
+        assert_eq!(try_u32_trait, Time::new(42_u32));
+        assert_eq!(
+            Time::<u32>::try_cast_from(t_u8).expect("u8 to u32 should work"),
+            Time::new(42_u32)
+        );
+
+        let exact_u32: Time<u32> = t_u8.try_exact_cast().expect("exact cast should work");
+        assert_eq!(exact_u32, Time::new(42_u32));
+        let exact_u32_trait: Time<u32> =
+            <Time<u8> as TryExactCast<Time<u32>>>::try_exact_cast(t_u8)
+                .expect("exact cast should work");
+        assert_eq!(exact_u32_trait, Time::new(42_u32));
+        assert_eq!(
+            Time::<u32>::try_exact_cast_from(t_u8).expect("exact cast should work"),
+            Time::new(42_u32)
+        );
     }
 }
 

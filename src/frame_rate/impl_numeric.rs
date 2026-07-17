@@ -4,3 +4,5 @@ common::impl_numeric_zero!(FrameRate<T>);
 common::impl_numeric_bounded_max!(FrameRate<T>);
 common::impl_numeric_min_max!(FrameRate<T>);
 common::impl_numeric_is_finite!(FrameRate<T>);
+
+rinia::impl_numeric_casts_transparent!(FrameRate<T>);
