@@ -19,7 +19,7 @@ zerocopy = ["dep:zerocopy"]
 _all_optional = ["sakka", "bytemuck", "zerocopy"]
 
 [dependencies]
-rinia = { version = "0.0.14", default-features = false }
+rinia = { version = "0.0.15", default-features = false }
 
 thiserror = { version = "2.0.18", default-features = false }
 

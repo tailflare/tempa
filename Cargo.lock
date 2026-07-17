@@ -77,9 +77,9 @@ dependencies = [
 
 [[package]]
 name = "rinia"
-version = "0.0.14"
+version = "0.0.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5c89d34c65d56685a0ecc165c406a50fcbbc716a9f22558761620c076de897fc"
+checksum = "75e4dac00719752858b9557a8602519bdcff9267d1dcc5bd25949370c24ae72e"
 dependencies = [
  "libm",
  "sakka",
