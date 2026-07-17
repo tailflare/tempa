@@ -31,12 +31,12 @@ The API is still evolving and may change significantly.
 ## Usage
 ### std
 ```toml
-tempa = "0.1.12"
+tempa = "0.1.13"
 ```
 
 ### no_std
 ```toml
-tempa = { version = "0.1.12", default-features = false }
+tempa = { version = "0.1.13", default-features = false }
 ```
 
 ### Example
