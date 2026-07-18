@@ -19,9 +19,9 @@ zerocopy = ["dep:zerocopy"]
 _all_optional = ["sakka", "bytemuck", "zerocopy"]
 
 [dependencies]
-rinia = { version = "0.0.17", default-features = false }
+rinia = { version = "0.0.18", default-features = false }
 
-thiserror = { version = "2.0.18", default-features = false }
+thiserror = { version = "2.0.19", default-features = false }
 
 pastey = "0.2.3"
 
