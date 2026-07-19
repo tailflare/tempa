@@ -77,9 +77,9 @@ dependencies = [
 
 [[package]]
 name = "rinia"
-version = "0.0.18"
+version = "0.0.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5ac66e8f31de84c57855d3f88df870baf72b275b933a9ac57fe228fa7979d372"
+checksum = "9e03b5992c752b266797b774e2b434c9cb948a580cde57e6dbf58845bf7c1a22"
 dependencies = [
  "libm",
  "sakka",
@@ -88,9 +88,9 @@ dependencies = [
 
 [[package]]
 name = "sakka"
-version = "0.0.19"
+version = "0.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02080bf9d0b948df491789580b19a9794e34648283ecfc6eeb0b9dd635955092"
+checksum = "6e729e723306f63490e565e96b20703b21122f0704e3c66a665c13ff480d3541"
 dependencies = [
  "pastey",
  "sakka-derive",
@@ -99,14 +99,14 @@ dependencies = [
 
 [[package]]
 name = "sakka-derive"
-version = "0.0.19"
+version = "0.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95fc9537ca7850b969343a331794c9356e9ec450bb852025774512d5b08d3fd7"
+checksum = "e87933ea893b00e072ec4155f7c785f2171646cc703651a4ba1745d4da0f6f92"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
  "quote",
- "syn 2.0.119",
+ "syn 3.0.0",
 ]
 
 [[package]]
