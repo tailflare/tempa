@@ -1,6 +1,6 @@
 [package]
 name = "tempa"
-version = "0.1.16"
+version = "0.1.17"
 publish = true
 edition = "2024"
 license = "MIT OR Apache-2.0"
@@ -19,13 +19,13 @@ zerocopy = ["dep:zerocopy"]
 _all_optional = ["sakka", "bytemuck", "zerocopy"]
 
 [dependencies]
-rinia = { version = "0.0.19", default-features = false }
+rinia = { version = "0.0.20", default-features = false }
 
 thiserror = { version = "2.0.19", default-features = false }
 
 pastey = "0.2.3"
 
-sakka = { version = "0.0.20", optional = true, default-features = false, features = [
+sakka = { version = "0.0.21", optional = true, default-features = false, features = [
     "derive",
 ] }
 bytemuck = { version = "1.25.2", optional = true, default-features = false }
